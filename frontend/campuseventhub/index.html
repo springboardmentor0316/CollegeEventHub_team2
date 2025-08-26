@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusEventHub - Inter-College Event Management Platform</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Content will be dynamically loaded here -->
+    </div>
+    
+    <script src="scripts/utils.js"></script>
+    <script src="scripts/auth.js"></script>
+    <script src="scripts/dashboard.js"></script>
+    <script src="scripts/events.js"></script>
+    <script>
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in
+            const currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+            
+            if (currentUser) {
+                // Load appropriate dashboard based on role
+                if (currentUser.role === 'student') {
+                    loadStudentDashboard();
+                } else if (currentUser.role === 'college_admin') {
+                    loadAdminDashboard();
+                }
+            } else {
+                // Load login page if not logged in
+                loadLoginPage();
+            }
+        });
+    </script>
+</body>
+</html>
