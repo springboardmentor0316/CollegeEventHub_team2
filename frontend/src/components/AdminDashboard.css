@@ -1,0 +1,39 @@
+/* Main Dashboard Styles */
+.admin-dashboard { padding: 2rem; background-color: #f9fafb; }
+.admin-dashboard .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+.admin-dashboard .welcome-section { display: flex; align-items: center; gap: 1rem; }
+.admin-dashboard .admin-avatar { background-color: #9b59b6; }
+.admin-dashboard .header-actions { display: flex; gap: 0.5rem; }
+.admin-dashboard .btn-primary { background-color: var(--primary-dark); color: white; border: none; padding: 0.6rem 1rem; border-radius: 8px; cursor: pointer; }
+.admin-dashboard .btn-secondary { background-color: white; border: 1px solid var(--border-color); padding: 0.6rem 1rem; border-radius: 8px; cursor: pointer; }
+.admin-dashboard .dashboard-nav { display: flex; gap: 0.5rem; border-bottom: 1px solid var(--border-color); margin-bottom: 2rem; }
+.admin-dashboard .dashboard-nav button { padding: 0.8rem 1.2rem; border: none; background: none; cursor: pointer; font-size: 1rem; font-weight: 500; color: var(--text-secondary); border-bottom: 2px solid transparent; }
+.admin-dashboard .dashboard-nav button.active { color: var(--primary-dark); border-bottom-color: var(--primary-dark); }
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
+.stat-card { background-color: white; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); }
+.stat-card h4 { font-size: 1rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
+.stat-card p { font-size: 2rem; font-weight: 600; }
+.stat-card span { font-size: 0.9rem; color: #27ae60; }
+.panels-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+.panel { background-color: white; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); }
+.panel.full-width { grid-column: 1 / -1; }
+.panel h3, .panel h4 { margin-bottom: 1rem; }
+.activity-list, .approval-list, .event-management-list, .user-stats-list, .user-activity-list, .performance-list, .categories-list { list-style: none; padding: 0; }
+.activity-list li, .approval-list li, .event-management-list li { padding: 1rem 0; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 1rem; }
+.activity-list li:last-child, .approval-list li:last-child, .event-management-list li:last-child { border-bottom: none; }
+.activity-list span, .user-activity-list span { margin-left: auto; color: var(--text-secondary); font-size: 0.9rem; }
+.priority { padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.8rem; font-weight: 600; }
+.priority.high { background-color: #fee2e2; color: #b91c1c; }
+.priority.medium { background-color: #fef3c7; color: #b45309; }
+.approval-list p { flex-grow: 1; }
+.approval-list button { margin-left: auto; }
+.event-management-list p { flex-grow: 1; font-weight: 500; }
+.status { padding: 0.2rem 0.7rem; border-radius: 12px; font-size: 0.8rem; }
+.status.published { background-color: #d1fae5; color: #065f46; }
+.status.draft { background-color: #e5e7eb; color: #4b5563; }
+.event-management-list .actions { display: flex; gap: 0.5rem; }
+.user-stats-list li, .user-activity-list li { display: flex; justify-content: space-between; padding: 0.8rem 0; }
+.performance-list li, .categories-list li { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+.performance-list label, .categories-list label { width: 180px; }
+.progress-bar { flex-grow: 1; height: 8px; background-color: #e5e7eb; border-radius: 4px; }
+.progress-bar div { height: 100%; border-radius: 4px; }
