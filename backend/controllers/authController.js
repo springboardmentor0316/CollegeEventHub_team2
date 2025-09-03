@@ -7,6 +7,8 @@ import transporter from "../config/nodemailer.js";
 export const register = async (req, res) => {
     try {
         const { name, email, password, college, role } = req.body;
+        console.log("Register request body:", req.body);
+
 
         if (!name || !email || !password || !college || !role) {
             return res.status(400).json({ success: false, message: "All fields are required." });
@@ -25,8 +27,13 @@ export const register = async (req, res) => {
             role
         });
 
-        const savedUser = await newUser.save();
+        // Generate a JWT verification token (expires in 1 day)
+        const verificationToken = jwt.sign({ email: newUser.email }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        newUser.verificationToken = verificationToken;
+        newUser.verificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000;
 
+        const savedUser = await newUser.save();
+        const verifyLink = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
         const token = jwt.sign({ id: savedUser._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
         res.cookie('token', token, {
@@ -39,8 +46,13 @@ export const register = async (req, res) => {
         const mailOptions = {
             from: process.env.SENDER_EMAIL,
             to: savedUser.email,
-            subject: 'Welcome to CampusEventHub!',
-            text: `Welcome to CampusEventHub! Your account has been created successfully.`
+            // subject: 'Welcome to CampusEventHub!',
+            // text: `Welcome to CampusEventHub! Your account has been created successfully.`
+
+            subject: 'Verify your CampusEventHub account',
+            html: `<p>Welcome ${newUser.name},</p>
+                   <p>Please verify your email by clicking the link below:</p>
+                   <a href="${verifyLink}">Verify Email</a>`
         };
         await transporter.sendMail(mailOptions);
 
@@ -53,6 +65,7 @@ export const register = async (req, res) => {
 };
 
 // --- User Login ---
+
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -68,13 +81,21 @@ export const login = async (req, res) => {
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
-
         if (!isMatch) {
             return res.status(401).json({ success: false, message: 'Invalid credentials' });
         }
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+        // Check if account is verified
+        if (!user.isAccountVerified) {
+            return res.status(200).json({
+                success: false,
+                message: "Please verify your email before logging in",
+                user: { email: user.email, name: user.name } // optional
+            });
+        }
 
+        // Generate token if verified
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
@@ -82,14 +103,10 @@ export const login = async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
 
-        return res.status(200).json({ 
-            success: true, 
+        return res.status(200).json({
+            success: true,
             message: 'Login successful',
-            user: {
-                name: user.name,
-                email: user.email,
-                role: user.role
-            }
+            user: { name: user.name, email: user.email, role: user.role }
         });
 
     } catch (error) {
@@ -98,14 +115,28 @@ export const login = async (req, res) => {
     }
 };
 
-// --- User Logout ---
-export const logout = (req, res) => {
+export const logout = async (req, res) => {
     try {
+        const token = req.cookies.token;
+        if (!token) return res.status(400).json({ success: false, message: "No token provided" });
+
+        // Ensure req.user is set via your auth middleware
+        const user = await userModel.findById(req.user.id);
+        if (user) {
+            // Completely remove the token field from the database
+            await userModel.updateOne(
+                { _id: req.user.id },
+                { $unset: { token: "" } } // This deletes the token field
+            );
+        }
+
+        // Clear cookie
         res.clearCookie('token', {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
         });
+
         return res.status(200).json({ success: true, message: "Logged out successfully" });
     } catch (error) {
         console.error("--- LOGOUT ERROR ---", error);
@@ -113,17 +144,44 @@ export const logout = (req, res) => {
     }
 };
 
+
+
+export const verifyEmail = async (req, res) => {
+    const { token } = req.body;
+
+    // Find user with this token
+    const user = await userModel.findOne({ verificationToken: token });
+
+    if (!user) return res.status(400).json({ success: false, message: "Invalid token" });
+
+    // Check token expiry
+    if (user.verificationTokenExpires < Date.now())
+        return res.status(400).json({ success: false, message: "Token expired" });
+
+    // Mark account as verified
+    user.isAccountVerified = true;
+    user.verificationToken = undefined;
+    user.verificationTokenExpires = undefined;
+    await user.save();
+
+    // Return user role
+    return res.status(200).json({ success: true, role: user.role });
+}
 // --- Send Password Reset OTP ---
 export const sendResetOtp = async (req, res) => {
     try {
         const { email } = req.body;
+        console.log(req.body);
+        console.log("EMAIL_USER:", process.env.SMTP_USER);
+console.log("EMAIL_PASS:", process.env.SMTP_PASS ? "****" : "MISSING");
+
         if (!email) {
             return res.status(400).json({ success: false, message: "Email is required" });
         }
 
         const user = await userModel.findOne({ email: email.toLowerCase() });
         if (!user) {
-            return res.status(200).json({ success: true, message: "If a user with this email exists, a password reset OTP has been sent." });
+            return res.status(200).json({ success: false, message: "No user found with this email" });
         }
 
         const otp = String(Math.floor(100000 + Math.random() * 900000));
@@ -133,7 +191,7 @@ export const sendResetOtp = async (req, res) => {
 
         const mailOptions = {
             from: process.env.SENDER_EMAIL,
-            to: user.email,
+            to: email,
             subject: 'Your Password Reset OTP',
             text: `Your OTP to reset your password is: ${otp}. It will expire in 10 minutes.`
         };

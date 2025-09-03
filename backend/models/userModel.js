@@ -13,8 +13,9 @@ const userSchema = new mongoose.Schema({
         default: 'student'                   
     },
     isAccountVerified: { type: Boolean, default: false },
-    verifyOtp: String,
-    verifyOtpExpiresAt: Date,
+    verificationToken: String,
+    verificationTokenExpires: Date,
+
     resetOtp: String,
     resetOtpExpiresAt: Date,
 }, { timestamps: true });
