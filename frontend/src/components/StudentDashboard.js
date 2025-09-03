@@ -6,6 +6,7 @@ import MyEvents from './MyEvents';
 import Favorites from './Favorites';
 import Header from './Header';
 
+
 const StudentDashboard = () => {
     const { user } = useAuth(); // 2. Get the user object from the context
     const [activeTab, setActiveTab] = useState('discover');

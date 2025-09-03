@@ -1,8 +1,11 @@
+
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import './AuthForm.css';
+import API from '../axios';
+import { toast } from 'react-toastify';
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
@@ -10,39 +13,47 @@ const LoginPage = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
 
-    // Function to handle form submission
     const handleLogin = async (event) => {
         event.preventDefault();
 
-    // Add this line for debugging
-    console.log('Sending to backend:', { email, password });
+        console.log('Sending to backend:', { email, password });
 
-    try {
-        const response = await axios.post('/api/auth/login', { email, password });
+        try {
+            const response = await API.post('/api/auth/login', { email, password });
+            const { success, message, user } = response.data;
 
-        // CRITICAL CHECK: Only proceed if the backend says the login was successful.
-        if (response.data.success) {
-            login(response.data.user);
-            navigate('/student-dashboard'); // Navigate to the dashboard
-        } else {
-            // If success is false, show the error message from the backend.
-            alert('Login failed: ' + response.data.message);
+            if (success) {
+                login(user); // Save user to context
+                toast.success(message || "Login successful!");
+
+                // Redirect based on role
+                if (user.role === "student") navigate('/student-dashboard');
+                else if (user.role === "college_admin") navigate('/admin-dashboard');
+                else navigate('/'); // fallback
+            } else {
+                // Account not verified
+                if (message.toLowerCase().includes("verify your email")) {
+                    toast.info(message);
+                    navigate('/verify-email', { state: { email } });
+                } else {
+                    // Invalid credentials or other errors
+                    toast.error(message || "Login failed. Please check your credentials.");
+                }
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            toast.error("Login failed. Please check your credentials or try again later.");
         }
-
-    } catch (error) {
-        // This handles network errors or if the backend sends a non-200 status code.
-        alert('Login failed. Please check your credentials.');
-        console.error('Login error:', error);
-    }
-};
+    };
 
     return (
         <div className="auth-page">
             <div className="form-container">
-                <Link to="/" className="logo"><i className="logo-icon">CE</i> CampusEventHub</Link>
+                <Link to="/" className="logo">
+                    <i className="logo-icon">CE</i> CampusEventHub
+                </Link>
                 <h2>Login to your account</h2>
                 
-                {/* Add onSubmit to the form tag */}
                 <form onSubmit={handleLogin}>
                     <div className="form-group">
                         <label htmlFor="login-email">Email address</label>
@@ -55,6 +66,7 @@ const LoginPage = () => {
                             required
                         />
                     </div>
+
                     <div className="form-group">
                         <label htmlFor="login-password">Password</label>
                         <input
@@ -66,10 +78,12 @@ const LoginPage = () => {
                             required
                         />
                     </div>
+
                     <div className="extra-links">
                         <span></span>
                         <Link to="/forgot-password">Forgot password?</Link>
                     </div>
+
                     <button type="submit" className="btn btn-primary">Login</button>
                 </form>
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './AuthForm.css'; // We reuse the same CSS for a consistent look
+import API from '../axios';
 
 const RegistrationSuccess = () => {
     return (

@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios'; // 1. Import axios
 import './AuthForm.css';
+import API from '../axios';
+import { toast } from 'react-toastify';
+
 
 const RegisterPage = () => {
     // 2. Create state variables to hold the form data
@@ -17,13 +20,27 @@ const RegisterPage = () => {
     const handleRegister = async (event) => {
         event.preventDefault();
 
+        if (!name || !email || !password || !confirmPassword || !college || !role) {
+            toast.error("All fields are required!");
+            return; // Stop form submission
+        }
+    
+        // 2. Check password match
         if (password !== confirmPassword) {
-            alert("Passwords do not match!");
-            return; // Stop the function if they don't match
+            toast.error("Passwords do not match!");
+            return;
+        }
+    
+        // 3. Optional: simple email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            toast.error("Please enter a valid email address");
+            return;
         }
 
+        
         try {
-            const response = await axios.post('/api/auth/register', {
+            const response = await API.post('/api/auth/register', {
                 name,
                 email,
                 password,
@@ -33,12 +50,15 @@ const RegisterPage = () => {
 
             if (response.data.success) {
                 // Navigate to the success page ONLY if the backend confirms it
-                navigate('/registration-success');
+                // navigate('/registration-success');
+                navigate('/verify-email',{ state: { email } });
             } else {
-                alert('Registration failed: ' + response.data.message);
+                // alert('Registration failed: ' + response.data.message);
+                toast.error("Registration failed: " + response.data.message);
             }
         } catch (error) {
-            alert('An error occurred during registration. Please try again.');
+            // alert('An error occurred during registration. Please try again.');
+            toast.error("An error occurred during registration. Please try again.");
             console.error('Registration error:', error);
         }
     };

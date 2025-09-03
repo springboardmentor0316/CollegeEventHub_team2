@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import API from '../axios';
 
 const AuthContext = createContext(null);
 
@@ -27,10 +28,20 @@ export const AuthProvider = ({ children }) => {
         setAuthUser(userData);
     };
 
-    const logout = () => {
-        setAuthUser(null);
-    };
+    // const logout = () => {
+    //     setAuthUser(null);
+    // };
 
+    const logout = async () => {
+        try {
+            await API.post('/api/auth/logout'); // backend clears DB token and cookie
+        } catch (error) {
+            console.error("Logout API error:", error);
+        }
+        setAuthUser(null);
+        document.cookie = 'token=; Max-Age=0; path=/;';
+    };
+    
     const value = { user: authUser, login, logout };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
