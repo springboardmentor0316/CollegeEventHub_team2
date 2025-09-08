@@ -1,3 +1,37 @@
+:root {
+    --text-secondary: #6b7280;
+    --border-color: #e5e7eb;
+    --primary-dark: #4f46e5;
+  }
+  
+  .status-indicator {
+    padding: 0.2rem 0.7rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+  
+  .status-indicator.published {
+    background-color: #dcfce7;
+    color: #166534;
+  }
+  
+  .status-indicator.draft {
+    background-color: #fef3c7;
+    color: #92400e;
+  }
+  
+  .event-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 16px 16px 0 0;
+  }
+
+
+
+
+  
 .event-listing-container {
     max-width: 1200px;
     margin: 2rem auto;
