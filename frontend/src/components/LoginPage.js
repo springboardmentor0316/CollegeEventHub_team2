@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const { login } = useAuth();
     const navigate = useNavigate();
 
@@ -46,6 +47,10 @@ const LoginPage = () => {
         }
     };
 
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
     return (
         <div className="auth-page">
             <div className="form-container">
@@ -67,16 +72,26 @@ const LoginPage = () => {
                         />
                     </div>
 
-                    <div className="form-group">
+                    <div className="form-group password-group">
                         <label htmlFor="login-password">Password</label>
+                        <div className="password-input-container">
                         <input
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                             id="login-password"
                             placeholder="Enter your password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
                         />
+                        <button 
+                                type="button" 
+                                className="password-toggle"
+                                onClick={togglePasswordVisibility}
+                            >
+                                {showPassword ? "🙈" : "👁️"}
+                                {/* {showPassword ? "👁️" : "🙈"} */}
+                            </button>
+                         </div>
                     </div>
 
                     <div className="extra-links">

@@ -1,15 +1,16 @@
+
+
 import React, { useState, useEffect } from 'react';
 import Header from './Header';
 import './CreateEventPage.css';
 import API from '../axios';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
 
 const CreateEventPage = ({ setShowCreateForm, setNewEvent, editingEvent, setEditingEvent, setActiveTab }) => {
   const { user } = useAuth();
   const [tagInput, setTagInput] = useState('');
-  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const initialFormState = {
     title: '',
@@ -49,8 +50,17 @@ const CreateEventPage = ({ setShowCreateForm, setNewEvent, editingEvent, setEdit
         requirements: editingEvent.requirements || '',
         tags: editingEvent.tags || [],
       });
+    } else {
+      // Reset form when creating a new event
+      resetForm();
     }
   }, [editingEvent]);
+
+  // Function to completely reset the form
+  const resetForm = () => {
+    setFormData(initialFormState);
+    setTagInput('');
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -72,6 +82,11 @@ const CreateEventPage = ({ setShowCreateForm, setNewEvent, editingEvent, setEdit
 
   const handleSubmit = async (e, draft = false) => {
     e.preventDefault();
+
+    if (isSubmitting) return;
+    
+    setIsSubmitting(true);
+
     try {
       if (!user) {
         toast.error('You must be logged in to create an event');
@@ -96,23 +111,32 @@ const CreateEventPage = ({ setShowCreateForm, setNewEvent, editingEvent, setEdit
       }
 
       // Update parent state so MyEventsTab can see new/updated event
-      setNewEvent(res.data.event);
+      if (setNewEvent) {
+        setNewEvent(res.data.event);
+      }
 
+      // Reset the form
+      resetForm();
+      
       // Close form and redirect to My Events tab
       setShowCreateForm(false);
       setEditingEvent(null);
-      setActiveTab('my-events');
-
-      // Reset form fields
-      setFormData(initialFormState);
-      setTagInput('');
+      
+      // Force a redirect by using a state update that will trigger a re-render
+      setTimeout(() => {
+        setActiveTab('my-events');
+      }, 0);
     } catch (err) {
       console.error(err);
-      toast.error(`Error ${editingEvent ? 'updating' : 'creating'} event`);
+      // toast.error(`Error ${editingEvent ? 'updating' : 'creating'} event`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleCancel = () => {
+    // Reset the form before closing
+    resetForm();
     setShowCreateForm(false);
     setEditingEvent(null);
     setActiveTab('my-events');
@@ -124,7 +148,6 @@ const CreateEventPage = ({ setShowCreateForm, setNewEvent, editingEvent, setEdit
       <div className="create-event-container">
         <div className="form-header">
           <h2>
-            <span className="form-icon">➕</span> 
             {editingEvent ? 'Edit Event' : 'Create New Event'}
           </h2>
           <p>{editingEvent ? 'Update the details of your event' : 'Fill in the details to create a new campus event'}</p>
@@ -283,15 +306,20 @@ const CreateEventPage = ({ setShowCreateForm, setNewEvent, editingEvent, setEdit
 
           {/* Actions */}
           <div className="form-actions">
-            <button type="button" className="btn-secondary" onClick={handleCancel}>
+            <button type="button" className="btn-secondary" onClick={handleCancel} disabled={isSubmitting}>
               Cancel
             </button>
             <div className="action-group-right">
-              <button type="button" className="btn-secondary" onClick={(e) => handleSubmit(e, true)}>
-                📄 {editingEvent ? 'Update Draft' : 'Save as Draft'}
+              <button 
+                type="button" 
+                className="btn-secondary" 
+                onClick={(e) => handleSubmit(e, true)} 
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? '⏳' : '📄'} {editingEvent ? 'Update Draft' : 'Save as Draft'}
               </button>
-              <button type="submit" className="btn-primary">
-                🚀 {editingEvent ? 'Update Event' : 'Publish Event'}
+              <button type="submit" className="btn-primary" disabled={isSubmitting}>
+                {isSubmitting ? '⏳' : '🚀'} {editingEvent ? 'Update Event' : 'Publish Event'}
               </button>
             </div>
           </div>

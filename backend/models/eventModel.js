@@ -15,10 +15,25 @@ const eventSchema = new mongoose.Schema({
   image: { type: String },
   requirements: { type: String },
   tags: [String],
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+
+  createdBy: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: "User", 
+    required: true 
+  },
+  creatorName: { type: String, required: true }, // Store creator name for easier access
+
+  
   createdAt: { type: Date, default: Date.now },
   draft: { type: Boolean, default: false },
   published: { type: Boolean, default: false }
+});
+
+eventSchema.pre('save', function(next) {
+  if (this.isModified('draft')) {
+    this.published = !this.draft;
+  }
+  next();
 });
 
 export default mongoose.model("Event", eventSchema);

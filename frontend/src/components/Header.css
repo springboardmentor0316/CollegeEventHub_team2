@@ -1,3 +1,4 @@
+
 .main-header {
     display: flex;
     justify-content: space-between;
@@ -56,7 +57,12 @@
     font-weight: 500;
     padding: 0.5rem 0.8rem;
     border-radius: 8px;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s ease;
+    border: none;
+    font-family: inherit;
+    font-size: inherit;
+    cursor: pointer;
+    background: transparent;
 }
 
 .nav-item:hover {
@@ -66,4 +72,41 @@
 .nav-item.active {
     background-color: var(--primary-dark);
     color: var(--primary-light);
+}
+
+/* Specific style for logout button */
+.logout-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-weight: 500;
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    border: none;
+    font-family: inherit;
+    font-size: inherit;
+    cursor: pointer;
+    background: transparent;
+}
+
+.logout-button:hover {
+    background-color: #f3f4f6;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .main-header {
+        padding: 0.8rem 1rem;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .header-nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.8rem;
+    }
 }

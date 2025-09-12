@@ -6,37 +6,6 @@ import API from '../axios';
 const VerifyEmailPage = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
-
-    // useEffect(() => {
-    //     const verifyToken = async () => {
-    //         const token = new URLSearchParams(window.location.search).get('token');
-    //         if (!token) {
-    //             toast.error("No token provided!");
-    //             setLoading(false);
-    //             return;
-    //         }
-
-    //         try {
-    //             const response = await API.post('/api/auth/verify-email', { token });
-    //             if (response.data.success) {
-    //                 toast.success("Email verified successfully!");
-    //                 // Redirect based on role
-    //                 if (response.data.role === 'student') navigate('/student-dashboard');
-    //                 else if (response.data.role === 'college_admin') navigate('/admin-dashboard');
-    //             } else {
-    //                 toast.error(response.data.message);
-    //             }
-    //         } catch (error) {
-    //             toast.error("Verification failed.");
-    //         } finally {
-    //             setLoading(false);
-    //         }
-    //     };
-
-    //     verifyToken();
-    // }, [navigate]);
-
-
     useEffect(() => {
         const verifyToken = async () => {
             const urlParams = new URLSearchParams(window.location.search);
