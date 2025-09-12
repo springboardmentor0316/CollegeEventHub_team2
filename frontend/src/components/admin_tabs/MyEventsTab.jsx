@@ -4,11 +4,15 @@ import API from "../../axios";
 import { useAuth } from '../../context/AuthContext';
 import { toast } from 'react-toastify';
 import "./MyEventsTab.css";
+import { useNavigate } from 'react-router-dom';
+
 
 const MyEventsTab = ({ newEvent, setNewEvent, setShowCreateForm, setEditingEvent }) => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [eventToDelete, setEventToDelete] = useState(null);
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchEvents();
@@ -17,13 +21,12 @@ const MyEventsTab = ({ newEvent, setNewEvent, setShowCreateForm, setEditingEvent
   const fetchEvents = async () => {
     console.log("📡 Fetching events...");
     try {
-      const res = await API.post("/api/events/my_events", {
-        userId: user.id
-      });
+      const res = await API.get("/api/events/my_events");
       console.log("✅ Response:", res);
       setEvents(res.data?.events || []);
     } catch (error) {
       console.error("❌ Error fetching events:", error);
+      toast.error("Error fetching events. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -55,28 +58,55 @@ const MyEventsTab = ({ newEvent, setNewEvent, setShowCreateForm, setEditingEvent
     return `${formatTime(startTime)} - ${formatTime(endTime)}`;
   };
 
-  const handleDeleteEvent = async (eventId) => {
-    if (window.confirm("Are you sure you want to delete this event?")) {
-      try {
-        await API.delete(`/api/events/delete_event/${eventId}`);
-        setEvents(events.filter(event => event._id !== eventId));
-        toast.success("Event deleted successfully");
-      } catch (error) {
-        console.error("Error deleting event:", error);
-        toast.error("Failed to delete event");
-      }
+  const handleDeleteEvent = async () => {
+    if (!eventToDelete) return;
+    
+    try {
+      await API.delete(`/api/events/delete_event/${eventToDelete}`);
+      setEvents(events.filter(event => event._id !== eventToDelete));
+      toast.success("Event deleted successfully");
+    } catch (error) {
+      console.error("Error deleting event:", error);
+      toast.error("Failed to delete event");
+    } finally {
+      setEventToDelete(null);
     }
   };
 
   const handleEditEvent = (event) => {
     setEditingEvent(event);
     setShowCreateForm(true);
+    // navigate('/create-event',{ state: { editingEvent: event} });
   };
 
   if (loading) return <p>Loading...</p>;
 
   return (
     <div className="event-listing-container">
+      {/* Delete Confirmation Modal */}
+      {eventToDelete && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Confirm Delete</h3>
+            <p>Are you sure you want to delete this event? This action cannot be undone.</p>
+            <div className="modal-actions">
+              <button 
+                className="btn-secondary"
+                onClick={() => setEventToDelete(null)}
+              >
+                Cancel
+              </button>
+              <button 
+                className="btn-danger"
+                onClick={handleDeleteEvent}
+              >
+                Delete Event
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <div className="event-listing-header">
         <h1>My Events</h1>
         <p>Manage and track your created events</p>
@@ -118,7 +148,7 @@ const MyEventsTab = ({ newEvent, setNewEvent, setShowCreateForm, setEditingEvent
                       </button>
                       <button 
                         className="delete-btn"
-                        onClick={() => handleDeleteEvent(event._id)}
+                        onClick={() => setEventToDelete(event._id)}
                         title="Delete event"
                       >
                         🗑️

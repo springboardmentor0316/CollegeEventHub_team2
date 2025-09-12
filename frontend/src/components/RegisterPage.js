@@ -15,6 +15,7 @@ const RegisterPage = () => {
     const [college, setCollege] = useState('');
     const [role, setRole] = useState('student'); // Default role
     const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
 
     // 3. Update the handleRegister function to send data
     const handleRegister = async (event) => {
@@ -63,6 +64,10 @@ const RegisterPage = () => {
         }
     };
 
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+    
     return (
         <div className="auth-page">
             <div className="form-container">
@@ -80,22 +85,42 @@ const RegisterPage = () => {
                         <input type="email" id="reg-email" placeholder="Enter your email" required
                                value={email} onChange={(e) => setEmail(e.target.value)} />
                     </div>
-                    <div className="form-group">
+                    <div className="form-group password-group">
                         <label htmlFor="reg-password">Password</label>
-                        <input type="password" id="reg-password" placeholder="Create a password" required
+                        <div className="password-input-container">
+                        <input type={showPassword ? "text" : "password"} id="reg-password" placeholder="Create a password" required
                                value={password} onChange={(e) => setPassword(e.target.value)} />
+                            <button 
+                                type="button" 
+                                className="password-toggle"
+                                onClick={togglePasswordVisibility}
+                            >
+                                {showPassword ? "🙈" : "👁️"}
+                                {/* {showPassword ? "👁️" : "🙈"} */}
+                            </button>
+                        </div>
                     </div>
 
-                    <div className="form-group">
+                    <div className="form-group password-group">
                         <label htmlFor="reg-confirm-password">Confirm Password</label>
+                        <div className="password-input-container">
                         <input 
-                            type="password" 
+                            type={showPassword ? "text" : "password"}
                             id="reg-confirm-password" 
                             placeholder="Confirm your password" 
                             required
                             value={confirmPassword} 
                             onChange={(e) => setConfirmPassword(e.target.value)} 
                         />
+                        <button 
+                                type="button" 
+                                className="password-toggle"
+                                onClick={togglePasswordVisibility}
+                            >
+                                {showPassword ? "🙈" : "👁️"}
+                                {/* {showPassword ? "👁️" : "🙈"} */}
+                            </button>
+                        </div>
                     </div>
                     
                     <div className="form-group">

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import './StudentDashboard.css';
@@ -6,27 +7,36 @@ import MyEvents from './MyEvents';
 import Favorites from './Favorites';
 import Header from './Header';
 
-
 const StudentDashboard = () => {
-    const { user } = useAuth(); // 2. Get the user object from the context
+    const { user } = useAuth();
     const [activeTab, setActiveTab] = useState('discover');
-    // Global state for favorited events, initially empty
     const [favoritedEvents, setFavoritedEvents] = useState([]);
 
     const handleToggleGlobalFavorite = (eventId, isFavorite) => {
         if (isFavorite) {
             // Add to favorites if not already present
-            if (!favoritedEvents.some(event => event.id === eventId)) {
+            if (!favoritedEvents.some(event => event._id === eventId)) {
                 // In a real app, you'd fetch the full event details here
-                // For now, let's assume DiscoverEvents passes enough info or you retrieve it.
-                // For simplicity, let's mock it for now.
-                const eventToAdd = { id: eventId, title: `Event ${eventId}`, date: 'Date', location: 'Location' }; // Mock data
+                // For now, we'll just store the ID and basic info
+                const eventToAdd = { 
+                    _id: eventId, 
+                    title: `Event ${eventId}`, 
+                    startDate: new Date().toISOString(),
+                    startTime: '10:00',
+                    venue: 'Campus Location',
+                    registered: 50,
+                    capacity: 100
+                };
                 setFavoritedEvents(prev => [...prev, eventToAdd]);
             }
         } else {
             // Remove from favorites
-            setFavoritedEvents(prev => prev.filter(event => event.id !== eventId));
+            setFavoritedEvents(prev => prev.filter(event => event._id !== eventId));
         }
+    };
+
+    const handleNavigateToDiscover = () => {
+        setActiveTab('discover');
     };
 
     const renderContent = () => {
@@ -34,10 +44,14 @@ const StudentDashboard = () => {
             case 'my-events':
                 return <MyEvents />;
             case 'favorites':
-                return <Favorites favoritedEvents={favoritedEvents} />; // Pass favorites to the Favorites tab
+                return <Favorites 
+                    favoritedEvents={favoritedEvents} 
+                    onToggleFavorite={handleToggleGlobalFavorite}
+                    onNavigateToDiscover={handleNavigateToDiscover}
+                />;
             case 'discover':
             default:
-                return <DiscoverEvents onToggleFavorite={handleToggleGlobalFavorite} />; // Pass handler to DiscoverEvents
+                return <DiscoverEvents onToggleFavorite={handleToggleGlobalFavorite} />;
         }
     };
 
@@ -47,7 +61,6 @@ const StudentDashboard = () => {
             <div className="dashboard-container">
                 <div className="dashboard-header">
                     <div className="welcome-section">
-                        {/* 3. Display user's initials and name dynamically */}
                         <div className="avatar">
                             {user ? user.name.split(' ').map(n => n[0]).join('') : 'G'}
                         </div>

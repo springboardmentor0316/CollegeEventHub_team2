@@ -8,8 +8,10 @@ import AnalyticsTab from './admin_tabs/AnalyticsTab';
 import MyEventsTab from './admin_tabs/MyEventsTab';
 import CreateEventPage from './CreateEventPage';
 import './AdminDashboard.css';
+import { useAuth } from '../context/AuthContext';
 
 const AdminDashboard = () => {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
   const [newEvent, setNewEvent] = useState(null); 
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -58,7 +60,7 @@ const AdminDashboard = () => {
           <div className="welcome-section">
             <div className="avatar admin-avatar">AU</div>
             <div>
-              <h1>Welcome back, Admin User</h1>
+              <h1>Welcome back, {user?.name || user?.email || 'Admin'}</h1>
               <p>CampusEventHub Admin</p>
             </div>
           </div>
