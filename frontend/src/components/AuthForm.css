@@ -1,10 +1,106 @@
-
 .auth-page {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     background-color: var(--accent-gray);
+}
+
+.form-container {
+    background: var(--primary-light);
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+    width: 100%;
+    max-width: 420px;
+}
+
+.form-container form {
+    width: 100%;
+}
+
+.form-container .logo,
+.form-container h2,
+.form-container p {
+    text-align: center;
+}
+
+.form-container .logo {
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.form-container h2 {
+    margin-bottom: 10px;
+    font-size: 24px;
+    color: var(--text-primary);
+}
+
+.form-container .form-group {
+    width: 100%;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-container label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+.form-container input, 
+.form-container select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 15px;
+    background-color: var(--accent-gray);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+.form-container input:focus, 
+.form-container select:focus {
+    outline: none;
+    border-color: var(--primary-dark);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* ✅ Fixed Button - full width */
+/* ✅ Login/Register buttons same width as inputs */
+.form-container .form-group .btn-primary,
+.full-width-btn {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;   /* important so width matches inputs */
+    padding: 12px;            /* same as inputs */
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-darker) 100%);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    transition: all 0.2s ease;
+    margin-top: 10px;
+    user-select: none;
+}
+
+
+.form-container .form-group .btn-primary:hover {
+    background: linear-gradient(135deg, var(--primary-darker) 0%, var(--primary-darkest) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+}
+
+.form-container .form-group .btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .password-group {
@@ -38,90 +134,14 @@
     background-color: rgba(0, 0, 0, 0.05);
 }
 
-.form-container {
-    background: var(--primary-light);
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 5px 25px rgba(0,0,0,0.08);
-    width: 100%;
-    max-width: 420px;
-    text-align: center;
-}
-
-.form-container .logo {
-    justify-content: center;
-    margin-bottom: 20px;
-}
-
-.form-container h2 {
-    margin-bottom: 10px;
-    font-size: 24px;
-    color: var(--text-primary);
-}
-
-.form-container .form-group {
-    margin-bottom: 20px;
-    text-align: left;
-}
-
-.form-container label {
-    display: block;
-    font-weight: 500;
-    margin-bottom: 8px;
-    font-size: 14px;
-    color: var(--text-primary);
-}
-
-.form-container input, .form-container select {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    font-size: 15px;
-    background-color: var(--accent-gray);
-    transition: border-color 0.2s, box-shadow 0.2s;
-    box-sizing: border-box;
-}
-
-.form-container input:focus, .form-container select:focus {
-    outline: none;
-    border-color: var(--primary-dark);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-.form-container .btn-primary {
-    width: 100%;
-    padding: 12px 16px;
-    font-size: 16px;
-    border: none;
-    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-darker) 100%);
-    color: white;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    margin-top: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
-}
-
-.form-container .btn-primary:hover {
-    background: linear-gradient(135deg, var(--primary-darker) 0%, var(--primary-darkest) 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
-}
-
-.form-container .btn-primary:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
 .form-container .extra-links {
     display: flex;
     justify-content: flex-end;
     margin-bottom: 20px;
 }
 
-.form-container .extra-links a, .form-container p a {
+.form-container .extra-links a, 
+.form-container p a {
     font-size: 14px;
     text-decoration: none;
     font-weight: 600;
@@ -129,7 +149,8 @@
     transition: color 0.2s;
 }
 
-.form-container .extra-links a:hover, .form-container p a:hover {
+.form-container .extra-links a:hover, 
+.form-container p a:hover {
     color: var(--primary-darker);
     text-decoration: underline;
 }
@@ -138,41 +159,6 @@
     margin-top: 25px;
     font-size: 14px;
     color: var(--text-secondary);
-}
-
-.role-selector {
-    display: flex;
-    gap: 15px;
-    margin-top: 10px;
-}
-
-.role-selector label {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-weight: normal;
-    cursor: pointer;
-}
-
-.text-center {
-    text-align: center;
-}
-
-.success-icon {
-    margin-bottom: 20px;
-    font-size: 48px;
-}
-
-/* If you don't have these CSS variables defined, add them to your :root */
-:root {
-    --primary-light: #ffffff;
-    --accent-gray: #f8fafc;
-    --border-color: #e2e8f0;
-    --text-primary: #1e293b;
-    --text-secondary: #64748b;
-    --primary-dark: #2563eb;
-    --primary-darker: #1d4ed8;
-    --primary-darkest: #1e40af;
 }
 
 .role-selector {
@@ -192,4 +178,54 @@
 
 .role-selector input[type="radio"] {
     margin: 0;
+}
+
+.success-icon {
+    margin-bottom: 20px;
+    font-size: 48px;
+}
+
+/* Default colors */
+:root {
+    --primary-light: #ffffff;
+    --accent-gray: #f8fafc;
+    --border-color: #e2e8f0;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --primary-dark: #2563eb;
+    --primary-darker: #1d4ed8;
+    --primary-darkest: #1e40af;
+}
+
+
+/* ================================
+   Auth Form Button Styles (Cleaned)
+   ================================ */
+
+/* Force Login/Register buttons to be full width */
+.auth-page .form-container form .form-group .btn.btn-primary {
+    display: block !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 12px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: white !important;
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-darker) 100%) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    text-align: center !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07) !important;
+    margin-top: 10px !important;
+}
+
+/* Force full-width for primary buttons inside auth forms */
+.form-container .btn-primary {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
 }

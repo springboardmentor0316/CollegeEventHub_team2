@@ -25,13 +25,13 @@ const RegisterPage = () => {
             toast.error("All fields are required!");
             return; // Stop form submission
         }
-    
+
         // 2. Check password match
         if (password !== confirmPassword) {
             toast.error("Passwords do not match!");
             return;
         }
-    
+
         // 3. Optional: simple email validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
@@ -39,7 +39,7 @@ const RegisterPage = () => {
             return;
         }
 
-        
+
         try {
             const response = await API.post('/api/auth/register', {
                 name,
@@ -52,7 +52,7 @@ const RegisterPage = () => {
             if (response.data.success) {
                 // Navigate to the success page ONLY if the backend confirms it
                 // navigate('/registration-success');
-                navigate('/verify-email',{ state: { email } });
+                navigate('/verify-email', { state: { email } });
             } else {
                 // alert('Registration failed: ' + response.data.message);
                 toast.error("Registration failed: " + response.data.message);
@@ -67,7 +67,7 @@ const RegisterPage = () => {
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
-    
+
     return (
         <div className="auth-page">
             <div className="form-container">
@@ -77,26 +77,25 @@ const RegisterPage = () => {
                     {/* 4. Connect inputs to state with value and onChange */}
                     <div className="form-group">
                         <label htmlFor="reg-name">Full Name</label>
-                        <input type="text" id="reg-name" placeholder="Enter your full name" required 
-                               value={name} onChange={(e) => setName(e.target.value)} />
+                        <input type="text" id="reg-name" placeholder="Enter your full name" required
+                            value={name} onChange={(e) => setName(e.target.value)} />
                     </div>
                     <div className="form-group">
                         <label htmlFor="reg-email">Email address</label>
                         <input type="email" id="reg-email" placeholder="Enter your email" required
-                               value={email} onChange={(e) => setEmail(e.target.value)} />
+                            value={email} onChange={(e) => setEmail(e.target.value)} />
                     </div>
                     <div className="form-group password-group">
                         <label htmlFor="reg-password">Password</label>
                         <div className="password-input-container">
-                        <input type={showPassword ? "text" : "password"} id="reg-password" placeholder="Create a password" required
-                               value={password} onChange={(e) => setPassword(e.target.value)} />
-                            <button 
-                                type="button" 
+                            <input type={showPassword ? "text" : "password"} id="reg-password" placeholder="Create a password" required
+                                value={password} onChange={(e) => setPassword(e.target.value)} />
+                            <button
+                                type="button"
                                 className="password-toggle"
                                 onClick={togglePasswordVisibility}
                             >
-                                {showPassword ? "🙈" : "👁️"}
-                                {/* {showPassword ? "👁️" : "🙈"} */}
+                                {showPassword ? <i class="fas fa-eye-slash"></i> : <i class="fas fa-eye"></i>}
                             </button>
                         </div>
                     </div>
@@ -104,29 +103,28 @@ const RegisterPage = () => {
                     <div className="form-group password-group">
                         <label htmlFor="reg-confirm-password">Confirm Password</label>
                         <div className="password-input-container">
-                        <input 
-                            type={showPassword ? "text" : "password"}
-                            id="reg-confirm-password" 
-                            placeholder="Confirm your password" 
-                            required
-                            value={confirmPassword} 
-                            onChange={(e) => setConfirmPassword(e.target.value)} 
-                        />
-                        <button 
-                                type="button" 
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                id="reg-confirm-password"
+                                placeholder="Confirm your password"
+                                required
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                            />
+                            <button
+                                type="button"
                                 className="password-toggle"
                                 onClick={togglePasswordVisibility}
                             >
-                                {showPassword ? "🙈" : "👁️"}
-                                {/* {showPassword ? "👁️" : "🙈"} */}
+                                {showPassword ? <i class="fas fa-eye-slash"></i> : <i class="fas fa-eye"></i>}
                             </button>
                         </div>
                     </div>
-                    
+
                     <div className="form-group">
                         <label htmlFor="reg-college">College</label>
                         <select id="reg-college" required
-                                value={college} onChange={(e) => setCollege(e.target.value)}>
+                            value={college} onChange={(e) => setCollege(e.target.value)}>
                             <option value="">Select your college</option>
                             <option value="University of Technology">University of Technology</option>
                             <option value="Institute of Science">Institute of Science</option>
@@ -144,7 +142,10 @@ const RegisterPage = () => {
                             </label>
                         </div>
                     </div>
-                    <button type="submit" className="btn btn-primary">Register</button>
+                    <div className="form-group">
+                        <button type="submit" className="btn btn-primary">Register</button>
+                    </div>
+
                 </form>
                 <p>Already have an account? <Link to="/login">Login here</Link></p>
             </div>

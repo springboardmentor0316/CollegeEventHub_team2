@@ -9,13 +9,15 @@ const Header = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [isLoading, setIsLoading] = useState(false);
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
     useEffect(() => {
         // This will ensure the header updates when the user changes
     }, [user, location]);
 
-    const handleLogout = () => {
+    const confirmLogout = () => {
         setIsLoading(true);
+        setShowLogoutConfirm(false);
         setTimeout(() => {
             logout();           // Clear auth context & cookies
             navigate('/login'); // Redirect to login page
@@ -23,7 +25,16 @@ const Header = () => {
         }, 500);
     };
 
+    const handleLogout = () => {
+        setShowLogoutConfirm(true);
+    };
+
+    const cancelLogout = () => {
+        setShowLogoutConfirm(false);
+    };
+
     return (
+        <>
         <header className="main-header">
             <div className="header-left">
                 <Link to="/" className="logo">
@@ -60,6 +71,19 @@ const Header = () => {
                 )}
             </nav>
         </header>
+
+        {showLogoutConfirm && (
+            <div className="logout-confirm-overlay">
+                <div className="logout-confirm-dialog">
+                    <p>Are you sure you want to logout?</p>
+                    <div className="logout-confirm-buttons">
+                        <button onClick={confirmLogout} className="btn btn-primary">Yes</button>
+                        <button onClick={cancelLogout} className="btn btn-secondary">No</button>
+                    </div>
+                </div>
+            </div>
+        )}
+        </>
     );
 };
 
