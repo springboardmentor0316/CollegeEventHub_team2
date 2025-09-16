@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import userModel from "../models/userModel.js";
 import transporter from "../config/nodemailer.js";
 
+
 // --- User Registration ---
 export const register = async (req, res) => {
     try {
@@ -235,3 +236,4 @@ export const resetPassword = async (req, res) => {
         return res.status(500).json({ success: false, message: "Server error." });
     }
 };
+
