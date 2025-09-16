@@ -34,15 +34,15 @@ const ResetPasswordPage = () => {
         event.preventDefault();
         try {
             const response = await API.post('/api/auth/reset-password', { email, otp, newPassword });
-             if (newPassword !== confirmPassword) {
-                        toast.error("Passwords do not match!");
-                        return;
-                 }
-                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                         if (!emailRegex.test(email)) {
-                             toast.error("Please enter a valid email address");
-                             return;
-                         }
+            if (newPassword !== confirmPassword) {
+                toast.error("Passwords do not match!");
+                return;
+            }
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                toast.error("Please enter a valid email address");
+                return;
+            }
             if (response.data.success) {
                 toast.success('Password has been reset successfully! Please log in.');
                 navigate('/login');
@@ -62,7 +62,7 @@ const ResetPasswordPage = () => {
         <div className="auth-page">
             <div className="form-container">
                 <Link to="/" className="logo"><i className="logo-icon">CE</i> CampusEventHub</Link>
-                
+
                 {step === 1 && (
                     <>
                         <h2>Reset your password</h2>
@@ -70,16 +70,19 @@ const ResetPasswordPage = () => {
                         <form onSubmit={handleSendOtp}>
                             <div className="form-group ">
                                 <label htmlFor="reset-email">Email address</label>
-                                <input 
-                                    type="email" 
-                                    id="reset-email" 
-                                    placeholder="Enter your email" 
-                                    value={email} 
-                                    onChange={(e) => setEmail(e.target.value)} 
-                                    required 
+                                <input
+                                    type="email"
+                                    id="reset-email"
+                                    placeholder="Enter your email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
                                 />
                             </div>
-                            <button type="submit" className="btn btn-primary">Send OTP</button>
+                            <div className="form-group">
+                                <button type="submit" className="btn btn-primary">Send OTP</button>
+                            </div>
+
                         </form>
                     </>
                 )}
@@ -91,67 +94,77 @@ const ResetPasswordPage = () => {
                             <div className="form-group password-group">
                                 <label htmlFor="otp">OTP</label>
                                 <div className="password-input-container">
-                                <input 
-                                    type="text" 
-                                    id="otp" 
-                                    placeholder="Enter the OTP from your email" 
-                                    value={otp} 
-                                    onChange={(e) => setOtp(e.target.value)} 
-                                    required 
-                                />
+                                    <input
+                                        type="text"
+                                        id="otp"
+                                        placeholder="Enter the OTP from your email"
+                                        value={otp}
+                                        onChange={(e) => setOtp(e.target.value)}
+                                        required
+                                    />
                                 </div>
                             </div>
                             <div className="form-group">
                                 <label htmlFor="new-password">New Password</label>
                                 <div className="password-input-container">
-                                <input 
-                                    type={showPassword ? "text" : "password"}
-                                    id="new-password" 
-                                    placeholder="Enter your new password" 
-                                    value={newPassword} 
-                                    onChange={(e) => setNewPassword(e.target.value)} 
-                                    required 
-                                />
-                               <button 
-                                type="button" 
-                                className="password-toggle"
-                                onClick={togglePasswordVisibility}
-                            >
-                                {showPassword ? "🙈" : "👁️"}
-                                {/* {showPassword ? "👁️" : "🙈"} */}
-                            </button>
-                            </div>
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        id="new-password"
+                                        placeholder="Enter your new password"
+                                        value={newPassword}
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                        required
+                                    />
+                                    <button
+                                        type="button"
+                                        className="password-toggle"
+                                        onClick={togglePasswordVisibility}
+                                    >
+                                        {showPassword ? <i class="fas fa-eye-slash"></i> : <i class="fas fa-eye"></i>}
+                                    </button>
+                                </div>
                             </div>
 
 
                             <div className="form-group password-group">
-                        <label htmlFor="reg-confirm-password">Confirm Password</label>
-                        <div className="password-input-container">
-                        <input 
-                            type={showPassword ? "text" : "password"}
-                            id="reg-confirm-password" 
-                            placeholder="Confirm your password" 
-                            required
-                            value={confirmPassword} 
-                            onChange={(e) => setConfirmPassword(e.target.value)} 
-                        />
-                        <button 
-                                type="button" 
-                                className="password-toggle"
-                                onClick={togglePasswordVisibility}
-                            >
-                                {showPassword ? "🙈" : "👁️"}
-                                {/* {showPassword ? "👁️" : "🙈"} */}
-                            </button>
-                        </div>
-                    </div>
+                                <label htmlFor="reg-confirm-password">Confirm Password</label>
+                                <div className="password-input-container">
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        id="reg-confirm-password"
+                                        placeholder="Confirm your password"
+                                        required
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                    />
+                                    <button
+                                        type="button"
+                                        className="password-toggle"
+                                        onClick={togglePasswordVisibility}
+                                    >
+                                        {showPassword ? <i class="fas fa-eye-slash"></i> : <i class="fas fa-eye"></i>}
+                                    </button>
+                                </div>
+                            </div>
 
                             <button type="submit" className="btn btn-primary">Reset Password</button>
                         </form>
                     </>
                 )}
 
-                <Link to="/login" className="back-link">← Back to Login</Link>
+                <div className="form-group">
+                    <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={() => navigate('/login')}
+                    >
+                        ← Back to Login
+                    </button>
+                </div>
+
+
+
+
             </div>
         </div>
     );

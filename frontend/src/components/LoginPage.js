@@ -1,11 +1,10 @@
-
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './AuthForm.css';
 import API from '../axios';
 import { toast } from 'react-toastify';
+
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
@@ -16,8 +15,6 @@ const LoginPage = () => {
 
     const handleLogin = async (event) => {
         event.preventDefault();
-
-        console.log('Sending to backend:', { email, password });
 
         try {
             const response = await API.post('/api/auth/login', { email, password });
@@ -37,7 +34,6 @@ const LoginPage = () => {
                     toast.info(message);
                     navigate('/verify-email', { state: { email } });
                 } else {
-                    // Invalid credentials or other errors
                     toast.error(message || "Login failed. Please check your credentials.");
                 }
             }
@@ -58,8 +54,9 @@ const LoginPage = () => {
                     <i className="logo-icon">CE</i> CampusEventHub
                 </Link>
                 <h2>Login to your account</h2>
-                
+
                 <form onSubmit={handleLogin}>
+                    {/* Email */}
                     <div className="form-group">
                         <label htmlFor="login-email">Email address</label>
                         <input
@@ -72,37 +69,44 @@ const LoginPage = () => {
                         />
                     </div>
 
+                    {/* Password */}
                     <div className="form-group password-group">
                         <label htmlFor="login-password">Password</label>
                         <div className="password-input-container">
-                        <input
-                            type={showPassword ? "text" : "password"}
-                            id="login-password"
-                            placeholder="Enter your password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                        <button 
-                                type="button" 
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                id="login-password"
+                                placeholder="Enter your password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+                            <button
+                                type="button"
                                 className="password-toggle"
                                 onClick={togglePasswordVisibility}
                             >
-                                {showPassword ? "🙈" : "👁️"}
-                                {/* {showPassword ? "👁️" : "🙈"} */}
+                                {showPassword ? <i class="fas fa-eye-slash"></i> : <i class="fas fa-eye"></i>}
                             </button>
-                         </div>
+                        </div>
                     </div>
 
+                    {/* Forgot Password */}
                     <div className="extra-links">
-                        <span></span>
                         <Link to="/forgot-password">Forgot password?</Link>
                     </div>
 
-                    <button type="submit" className="btn btn-primary">Login</button>
+                    {/* Login Button */}
+                    <div className="form-group">
+                        <button type="submit" className="btn btn-primary full-width-btn">
+                            Login
+                        </button>
+                    </div>
                 </form>
 
-                <p>Don't have an account? <Link to="/register">Register here</Link></p>
+                <p>
+                    Don't have an account? <Link to="/register">Register here</Link>
+                </p>
             </div>
         </div>
     );
