@@ -1,0 +1,39 @@
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Button Styles */
+.btn {
+    display: inline-block;
+    padding: 10px 22px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 15px;
+    text-decoration: none;
+    text-align: center;
+}
+
+.btn-primary {
+    background-color: var(--primary-dark);
+    color: var(--primary-light);
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary-dark);
+    
+}
+
+.btn-secondary {
+    background-color: var(--primary-light);
+    color: var(--primary-dark);
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+    background-color: var(--accent-gray);
+}
