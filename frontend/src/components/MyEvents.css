@@ -1,0 +1,333 @@
+/* My Events Styling - Same as Discover Events but Compact */
+.my-events {
+    padding: 24px;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    min-height: 100vh;
+}
+
+.my-events-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 32px;
+}
+
+.my-events-header .header-content h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 8px 0;
+}
+
+.my-events-header .header-content p {
+    color: #64748b;
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.btn-refresh {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-refresh:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+/* Compact Events Grid */
+.events-grid.compact {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+/* Compact Event Card */
+.event-card.compact {
+    border-radius: 16px;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.event-card.compact:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.event-card.compact .event-image-container {
+    height: 160px;
+    position: relative;
+}
+
+.event-card.compact .event-image-placeholder {
+    height: 160px;
+    font-size: 2.5rem;
+}
+
+.event-card.compact .event-content {
+    padding: 20px;
+}
+
+.event-card.compact .event-title {
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+    line-height: 1.3;
+}
+
+.event-card.compact .event-description {
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+    -webkit-line-clamp: 2;
+}
+
+.event-card.compact .event-details {
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.event-card.compact .detail-item {
+    gap: 10px;
+}
+
+.event-card.compact .detail-icon {
+    font-size: 1rem;
+    width: 20px;
+}
+
+.event-card.compact .detail-text {
+    font-size: 0.85rem;
+}
+
+/* Registration Status Overlay */
+.registration-status-overlay {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 2;
+}
+
+.registration-status-overlay .status-badge {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* Registration Actions */
+.registration-actions {
+    border-top: 1px solid #f1f5f9;
+    padding-top: 16px;
+}
+
+.registration-actions .btn-cancel {
+    background: #f8fafc;
+    color: #64748b;
+    border: 2px solid #e2e8f0;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    font-size: 0.9rem;
+}
+
+.registration-actions .btn-cancel:hover {
+    background: #fee2e2;
+    color: #dc2626;
+    border-color: #fecaca;
+    transform: translateY(-1px);
+}
+
+.registration-actions .btn-secondary {
+    background: #f1f5f9;
+    color: #475569;
+    border: 2px solid #e2e8f0;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    font-size: 0.9rem;
+}
+
+.registration-actions .btn-secondary:hover {
+    background: #e2e8f0;
+    transform: translateY(-1px);
+}
+
+.approved-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.approved-actions .btn-secondary,
+.approved-actions .btn-cancel {
+    flex: 1;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 80px 40px;
+    background: white;
+    border-radius: 20px;
+    border: 2px dashed #e2e8f0;
+    margin-top: 40px;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.empty-state h3 {
+    font-size: 1.5rem;
+    color: #374151;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.empty-state p {
+    color: #64748b;
+    margin-bottom: 24px;
+    font-size: 1rem;
+}
+
+.empty-state .btn-primary {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.empty-state .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+/* Loading State */
+.my-events .loading {
+    text-align: center;
+    padding: 60px 20px;
+    font-size: 18px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+/* Status Badge Colors */
+.status-pending {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+}
+
+.status-approved {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+
+.status-rejected {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+}
+
+.status-cancelled {
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+    color: white;
+}
+
+/* Responsive Design for Compact Cards */
+@media (max-width: 1200px) {
+    .events-grid.compact {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 18px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .events-grid.compact {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .my-events {
+        padding: 16px;
+    }
+    
+    .my-events-header {
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    
+    .events-grid.compact {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .event-card.compact .event-image-container {
+        height: 140px;
+    }
+    
+    .event-card.compact .event-image-placeholder {
+        height: 140px;
+        font-size: 2rem;
+    }
+    
+    .event-card.compact .event-content {
+        padding: 16px;
+    }
+    
+    .approved-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .events-grid.compact {
+        gap: 12px;
+    }
+    
+    .event-card.compact .event-image-container {
+        height: 120px;
+    }
+    
+    .event-card.compact .event-image-placeholder {
+        height: 120px;
+        font-size: 1.8rem;
+    }
+    
+    .event-card.compact .event-title {
+        font-size: 1.1rem;
+    }
+    
+    .event-card.compact .event-description {
+        font-size: 0.85rem;
+    }
+    
+    .empty-state {
+        padding: 60px 20px;
+    }
+    
+    .empty-icon {
+        font-size: 3rem;
+    }
+}

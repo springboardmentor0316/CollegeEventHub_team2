@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import './StudentDashboard.css';
 import DiscoverEvents from './DiscoverEvents';
@@ -12,26 +12,35 @@ const StudentDashboard = () => {
     const [activeTab, setActiveTab] = useState('discover');
     const [favoritedEvents, setFavoritedEvents] = useState([]);
 
-    const handleToggleGlobalFavorite = (eventId, isFavorite) => {
-        if (isFavorite) {
-            // Add to favorites if not already present
-            if (!favoritedEvents.some(event => event._id === eventId)) {
-                // In a real app, you'd fetch the full event details here
-                // For now, we'll just store the ID and basic info
-                const eventToAdd = { 
-                    _id: eventId, 
-                    title: `Event ${eventId}`, 
-                    startDate: new Date().toISOString(),
-                    startTime: '10:00',
-                    venue: 'Campus Location',
-                    registered: 50,
-                    capacity: 100
-                };
-                setFavoritedEvents(prev => [...prev, eventToAdd]);
+    // Load favorites from localStorage on component mount
+    useEffect(() => {
+        const savedFavorites = localStorage.getItem('favoriteEvents');
+        if (savedFavorites) {
+            try {
+                const parsedFavorites = JSON.parse(savedFavorites);
+                setFavoritedEvents(parsedFavorites);
+            } catch (error) {
+                console.error('Error loading favorites from localStorage:', error);
             }
+        }
+    }, []);
+
+    // Save to localStorage whenever favorites change
+    useEffect(() => {
+        localStorage.setItem('favoriteEvents', JSON.stringify(favoritedEvents));
+    }, [favoritedEvents]);
+
+    const handleToggleGlobalFavorite = (event, isFavorite) => {
+        if (isFavorite) {
+            // Add to favorites with the actual event data
+            setFavoritedEvents(prev => {
+                const exists = prev.some(fav => fav._id === event._id);
+                if (exists) return prev;
+                return [...prev, event];
+            });
         } else {
             // Remove from favorites
-            setFavoritedEvents(prev => prev.filter(event => event._id !== eventId));
+            setFavoritedEvents(prev => prev.filter(fav => fav._id !== event._id));
         }
     };
 
@@ -51,7 +60,10 @@ const StudentDashboard = () => {
                 />;
             case 'discover':
             default:
-                return <DiscoverEvents onToggleFavorite={handleToggleGlobalFavorite} />;
+                return <DiscoverEvents 
+                    onToggleFavorite={handleToggleGlobalFavorite} 
+                    favoritedEvents={favoritedEvents}
+                />;
         }
     };
 

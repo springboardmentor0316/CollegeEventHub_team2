@@ -8,4 +8,11 @@ const API = axios.create({
   withCredentials: true, // if you're using cookies for auth
 });
 
+
+
+API.interceptors.request.use((req) => {
+  // Your existing token logic
+  return req;
+});
+
 export default API;

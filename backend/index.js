@@ -11,6 +11,8 @@ import connectDB from './config/mongodb.js';
 import authRouter from './routes/authRoutes.js';
 
 import eventRouter from './routes/eventRouter.js';
+import registrationRouter from './routes/registrationRouter.js';
+import adminRouter from './routes/adminRouter.js';
 
 
 const app=express();
@@ -34,6 +36,8 @@ app.get('/',(req,res)=>{
 app.use('/api/auth',authRouter);
 
 app.use('/api/events', eventRouter);
+app.use('/api/registrations', registrationRouter);
+app.use('/api/admin', adminRouter);
 
 
 app.listen(port,()=>console.log(`Server started on ${port}`));
