@@ -5,9 +5,9 @@ import { useAuth } from '../context/AuthContext';
 const Favorites = ({ favoritedEvents, onToggleFavorite, onNavigateToDiscover }) => {
     const { user } = useAuth();
 
-    const handleRemoveFavorite = (eventId) => {
+    const handleRemoveFavorite = (event) => {
         if (onToggleFavorite) {
-            onToggleFavorite(eventId, false);
+            onToggleFavorite(event, false);
         }
     };
 
@@ -38,18 +38,20 @@ const Favorites = ({ favoritedEvents, onToggleFavorite, onNavigateToDiscover }) 
                         {favoritedEvents.map(event => (
                             <li key={event._id} className="event-list-item">
                                 <div className="event-info-container">
-                                    <h3>{event.title}</h3>
+                                    <h3>{event.title || 'Untitled Event'}</h3>
                                     <p className="event-info">
                                         📅 {formatDate(event.startDate)} at {formatTime(event.startTime)}
                                     </p>
-                                    <p className="event-info">📍 {event.venue}</p>
-                                    <p className="event-info">{event.registered}/{event.capacity} registered</p>
+                                    <p className="event-info">📍 {event.venue || 'No venue specified'}</p>
+                                    <p className="event-info">
+                                        {event.registeredCount || 0}/{event.capacity || '∞'} registered
+                                    </p>
                                 </div>
                                 <div className="list-item-actions">
                                     <button className="btn-secondary">View Details</button>
                                     <button 
                                         className="btn-tertiary"
-                                        onClick={() => handleRemoveFavorite(event._id)}
+                                        onClick={() => handleRemoveFavorite(event)}
                                     >
                                         Remove
                                     </button>

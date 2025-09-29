@@ -27,7 +27,18 @@ const eventSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   draft: { type: Boolean, default: false },
   published: { type: Boolean, default: false }
+}, { timestamps: true });
+
+// Add this virtual field to get registration count
+eventSchema.virtual('registeredCount').get(function() {
+  return this.registrations ? this.registrations.length : 0;
 });
+
+// Add this method to check if user is registered
+eventSchema.methods.isUserRegistered = function(userId) {
+  return this.registrations.some(reg => reg.user.toString() === userId);
+};
+
 
 eventSchema.pre('save', function(next) {
   if (this.isModified('draft')) {

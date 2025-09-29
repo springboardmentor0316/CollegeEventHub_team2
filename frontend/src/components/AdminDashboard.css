@@ -37,3 +37,56 @@
 .performance-list label, .categories-list label { width: 180px; }
 .progress-bar { flex-grow: 1; height: 8px; background-color: #e5e7eb; border-radius: 4px; }
 .progress-bar div { height: 100%; border-radius: 4px; }
+
+
+
+
+
+
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.btn-refresh {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-refresh:hover {
+    background: #0056b3;
+}
+
+.btn-refresh-small {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-left: 10px;
+}
+
+.btn-refresh-small:hover {
+    background: #545b62;
+}
+
+.panel-header-actions {
+    display: flex;
+    align-items: center;
+}
+
+.empty-state .btn-refresh {
+    margin-top: 10px;
+}
