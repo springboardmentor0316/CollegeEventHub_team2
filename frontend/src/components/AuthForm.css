@@ -198,11 +198,6 @@
 }
 
 
-/* ================================
-   Auth Form Button Styles (Cleaned)
-   ================================ */
-
-/* Force Login/Register buttons to be full width */
 .auth-page .form-container form .form-group .btn.btn-primary {
     display: block !important;
     width: 100% !important;
