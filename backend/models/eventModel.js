@@ -1,3 +1,4 @@
+
 import mongoose from "mongoose";
 
 const eventSchema = new mongoose.Schema({
@@ -23,22 +24,24 @@ const eventSchema = new mongoose.Schema({
   },
   creatorName: { type: String, required: true }, // Store creator name for easier access
 
-  
   createdAt: { type: Date, default: Date.now },
   draft: { type: Boolean, default: false },
-  published: { type: Boolean, default: false }
+  published: { type: Boolean, default: false },
+  
+  // These will be calculated dynamically
+  registeredCount: { type: Number, default: 0 },
+  reviewCount: { type: Number, default: 0 },
+  averageRating: { type: Number, default: 0 }
 }, { timestamps: true });
 
-// Add this virtual field to get registration count
-eventSchema.virtual('registeredCount').get(function() {
-  return this.registrations ? this.registrations.length : 0;
+// Virtual for checking if user is registered (if needed)
+eventSchema.virtual('actualRegisteredCount').get(function() {
+  return this.registeredCount || 0;
 });
 
-// Add this method to check if user is registered
-eventSchema.methods.isUserRegistered = function(userId) {
-  return this.registrations.some(reg => reg.user.toString() === userId);
-};
-
+// Ensure virtuals are included in JSON
+eventSchema.set('toJSON', { virtuals: true });
+eventSchema.set('toObject', { virtuals: true });
 
 eventSchema.pre('save', function(next) {
   if (this.isModified('draft')) {

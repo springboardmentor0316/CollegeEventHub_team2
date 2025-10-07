@@ -9,6 +9,7 @@ import MyEventsTab from './admin_tabs/MyEventsTab';
 import CreateEventPage from './CreateEventPage';
 import './AdminDashboard.css';
 import { useAuth } from '../context/AuthContext';
+import ReviewsTab from './admin_tabs/ReviewsTab'; 
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -42,10 +43,12 @@ const AdminDashboard = () => {
             setEditingEvent={setEditingEvent}
           />
         );
-      case 'users':
-        return <UsersTab />;
+      // case 'users':
+      //   return <UsersTab />;
       case 'analytics':
         return <AnalyticsTab />;
+      case 'reviews': // Add this case
+        return <ReviewsTab />;
       case 'overview':
       default:
         return <OverviewTab />;
@@ -83,7 +86,8 @@ const AdminDashboard = () => {
           <button className={activeTab === 'overview' ? 'active' : ''} onClick={() => setActiveTab('overview')}>Overview</button>
           <button className={activeTab === 'events' ? 'active' : ''} onClick={() => setActiveTab('events')}>All Events</button>
           <button className={activeTab === 'my-events' ? 'active' : ''} onClick={() => setActiveTab('my-events')}>My Events</button>
-          <button className={activeTab === 'users' ? 'active' : ''} onClick={() => setActiveTab('users')}>Users</button>
+          {/* <button className={activeTab === 'users' ? 'active' : ''} onClick={() => setActiveTab('users')}>Users</button> */}
+          <button className={activeTab === 'reviews' ? 'active' : ''} onClick={() => setActiveTab('reviews')}>Reviews</button>
           <button className={activeTab === 'analytics' ? 'active' : ''} onClick={() => setActiveTab('analytics')}>Analytics</button>
         </nav>
 
