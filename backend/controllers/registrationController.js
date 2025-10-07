@@ -74,6 +74,10 @@ export const registerForEvent = async (req, res) => {
 
         await registration.save();
         
+         // Update event registration count - ADD THIS
+         await updateEventRegistrationCount(eventId);
+
+
         // Populate the registration with event and user details
         await registration.populate('event', 'title startDate venue');
         await registration.populate('user', 'name email');
@@ -144,10 +148,16 @@ export const updateRegistrationStatus = async (req, res) => {
             return res.status(404).json({ success: false, message: "Registration not found" });
         }
 
+        const oldStatus = registration.status;
         registration.status = status;
         if (adminNotes) registration.adminNotes = adminNotes;
         
         await registration.save();
+
+        // Update event registration count if status changed to/from active status - ADD THIS
+        if (oldStatus !== status) {
+            await updateEventRegistrationCount(registration.event._id);
+        }
 
         // Send status update email with error handling
         let emailSubject, emailBody;
@@ -220,6 +230,9 @@ export const cancelRegistration = async (req, res) => {
           return res.status(404).json({ success: false, message: "Registration not found" });
       }
 
+
+      const eventId = registration.event;
+
       // Verify the registration belongs to the current user
       if (registration.user._id.toString() !== req.user.id) {
           return res.status(403).json({ success: false, message: "Not authorized" });
@@ -227,6 +240,9 @@ export const cancelRegistration = async (req, res) => {
 
       // DELETE the registration completely from database
       await Registration.findByIdAndDelete(registrationId);
+
+       // Update event registration count - ADD THIS
+       await updateEventRegistrationCount(eventId);
 
       res.json({ success: true, message: "Registration cancelled successfully" });
 
@@ -290,4 +306,34 @@ export const getPendingRegistrations = async (req, res) => {
           message: err.message 
       });
   }
+};
+
+// Helper function to update event registration count
+const updateEventRegistrationCount = async (eventId) => {
+    try {
+        console.log(`🔄 Updating registration count for event: ${eventId}`);
+        
+        const activeRegistrationsCount = await Registration.countDocuments({
+            event: eventId,
+            status: { $in: ['pending', 'approved'] }
+        });
+        
+        console.log(`📊 New count for event ${eventId}: ${activeRegistrationsCount}`);
+        
+        const updatedEvent = await Event.findByIdAndUpdate(
+            eventId,
+            { registeredCount: activeRegistrationsCount },
+            { new: true }
+        );
+        
+        if (!updatedEvent) {
+            console.error(`❌ Event ${eventId} not found when updating count`);
+            return;
+        }
+        
+        console.log(`✅ Successfully updated count for event: ${eventId} to ${activeRegistrationsCount}`);
+        return activeRegistrationsCount;
+    } catch (error) {
+        console.error('❌ Error updating event registration count:', error);
+    }
 };
