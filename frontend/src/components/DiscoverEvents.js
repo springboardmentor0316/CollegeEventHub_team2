@@ -4,6 +4,8 @@ import API from '../axios';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import RegistrationModal from './RegistrationModel';
+import ReviewModal from './ReviewModal';
+import EventReviews from './EventReviews';
 import './DiscoverEvents.css';
 
 const DiscoverEvents = ({ onToggleFavorite, favoritedEvents }) => {
@@ -11,14 +13,19 @@ const DiscoverEvents = ({ onToggleFavorite, favoritedEvents }) => {
     const [registrations, setRegistrations] = useState([]);
     const [filteredEvents, setFilteredEvents] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [showRegistrationModal, setShowRegistrationModal] = useState(false);
     const [showCancelConfirm, setShowCancelConfirm] = useState({ registrationId: null, eventId: null });
+    const [showReviewModal, setShowReviewModal] = useState(false);
+    const [selectedEventForReview, setSelectedEventForReview] = useState(null);
+    const [userReviews, setUserReviews] = useState({});
+    const [showReviewsModal, setShowReviewsModal] = useState(false);
+    const [selectedEventReviews, setSelectedEventReviews] = useState(null);
     
     const [availableCategories, setAvailableCategories] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('all');
-    const [statusFilter, setStatusFilter] = useState('all');
     const [dateRange, setDateRange] = useState({ start: '', end: '' });
 
     const { user } = useAuth();
@@ -27,22 +34,32 @@ const DiscoverEvents = ({ onToggleFavorite, favoritedEvents }) => {
         fetchEvents();
         if (user) {
             fetchUserRegistrations();
+            fetchUserReviews();
         }
-    }, [user]);
+    }, [user, favoritedEvents]);
 
     useEffect(() => {
         applyFilters();
-    }, [events, searchQuery, categoryFilter, statusFilter, dateRange]);
+    }, [events, searchQuery, categoryFilter, dateRange]);
 
-    // Debug useEffect
-    useEffect(() => {
-        console.log('🔍 DiscoverEvents - Current events:', events);
-        console.log('🔍 DiscoverEvents - Favorited events from props:', favoritedEvents);
-        console.log('🔍 DiscoverEvents - onToggleFavorite function:', onToggleFavorite ? 'Provided' : 'NOT PROVIDED');
-    }, [events, favoritedEvents, onToggleFavorite]);
+    const fetchUserReviews = async () => {
+        if (!user) return;
+        try {
+            const reviewsResponse = await API.get('/api/reviews/my-reviews');
+            const reviewsMap = {};
+            reviewsResponse.data.reviews?.forEach(review => {
+                reviewsMap[review.event._id || review.event] = review;
+            });
+            setUserReviews(reviewsMap);
+        } catch (error) {
+            console.error("Error fetching user reviews:", error);
+        }
+    };
 
     const fetchEvents = async () => {
         try {
+            setError(null);
+            setLoading(true);
             const res = await API.get("/api/events/all_events");
             const eventsData = res.data?.events || [];
             
@@ -58,6 +75,7 @@ const DiscoverEvents = ({ onToggleFavorite, favoritedEvents }) => {
             
         } catch (error) {
             console.error("Error fetching events:", error);
+            setError("Failed to load events. Please try again.");
             toast.error("Error fetching events. Please try again.");
         } finally {
             setLoading(false);
@@ -75,12 +93,20 @@ const DiscoverEvents = ({ onToggleFavorite, favoritedEvents }) => {
         }
     };
 
-    const handleToggleFavorite = (eventId) => {
-        console.log('⭐ DiscoverEvents: Toggle favorite called for event:', eventId);
+    const checkIfUserCanReview = async (eventId) => {
+        if (!user) return false;
         
-        // Find the actual event object
+        try {
+            const response = await API.get(`/api/reviews/event/${eventId}/can-review`);
+            return response.data.canReview;
+        } catch (error) {
+            console.error("Error checking review eligibility:", error);
+            return false;
+        }
+    };
+
+    const handleToggleFavorite = (eventId) => {
         const event = events.find(e => e._id === eventId);
-        console.log('⭐ Found event:', event);
         
         if (!event) {
             console.error('❌ Event not found');
@@ -88,21 +114,15 @@ const DiscoverEvents = ({ onToggleFavorite, favoritedEvents }) => {
         }
 
         const newFavoriteStatus = !event.isFavorite;
-        console.log('⭐ New favorite status:', newFavoriteStatus);
 
-        // Update local UI state first for immediate feedback
         setEvents(prevEvents =>
             prevEvents.map(event =>
                 event._id === eventId ? { ...event, isFavorite: newFavoriteStatus } : event
             )
         );
         
-        // Call parent function to update global state
         if (onToggleFavorite) {
-            console.log('⭐ Calling onToggleFavorite with event data');
             onToggleFavorite(event, newFavoriteStatus);
-        } else {
-            console.error('❌ onToggleFavorite function not provided');
         }
     };
 
@@ -122,14 +142,6 @@ const DiscoverEvents = ({ onToggleFavorite, favoritedEvents }) => {
             result = result.filter(event => event.category === categoryFilter);
         }
         
-        if (statusFilter !== 'all') {
-            if (statusFilter === 'published') {
-                result = result.filter(event => event.published);
-            } else if (statusFilter === 'draft') {
-                result = result.filter(event => event.draft);
-            }
-        }
-        
         if (dateRange.start) {
             const startDate = new Date(dateRange.start);
             result = result.filter(event => new Date(event.startDate) >= startDate);
@@ -137,6 +149,7 @@ const DiscoverEvents = ({ onToggleFavorite, favoritedEvents }) => {
         
         if (dateRange.end) {
             const endDate = new Date(dateRange.end);
+            endDate.setHours(23, 59, 59, 999);
             result = result.filter(event => new Date(event.startDate) <= endDate);
         }
         
@@ -144,7 +157,7 @@ const DiscoverEvents = ({ onToggleFavorite, favoritedEvents }) => {
     };
 
     const getRegistrationStatus = (eventId) => {
-        const registration = registrations.find(reg => reg.event && reg.event._id === eventId);
+        const registration = registrations.find(reg => reg.event && (reg.event._id === eventId || reg.event === eventId));
         return registration || null;
     };
 
@@ -160,6 +173,7 @@ const DiscoverEvents = ({ onToggleFavorite, favoritedEvents }) => {
     const handleRegistrationSuccess = async (registration) => {
         setShowRegistrationModal(false);
         await fetchUserRegistrations();
+        await fetchEvents();
         toast.success("Registration submitted successfully! Status: Pending Approval");
     };
 
@@ -167,11 +181,27 @@ const DiscoverEvents = ({ onToggleFavorite, favoritedEvents }) => {
         try {
             await API.put(`/api/registrations/cancel/${registrationId}`);
             setRegistrations(prev => prev.filter(reg => reg._id !== registrationId));
+            await fetchEvents();
             setShowCancelConfirm({ registrationId: null, eventId: null });
             toast.success("Registration cancelled successfully");
         } catch (error) {
             console.error("Error cancelling registration:", error);
             toast.error("Error cancelling registration");
+        }
+    };
+
+    const fallbackCopy = async (text) => {
+        try {
+            await navigator.clipboard.writeText(text);
+            toast.success('Event link copied to clipboard!');
+        } catch (err) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            toast.success('Event link copied to clipboard!');
         }
     };
 
@@ -182,22 +212,94 @@ const DiscoverEvents = ({ onToggleFavorite, favoritedEvents }) => {
             try {
                 await navigator.share({
                     title: eventTitle,
+                    text: `Check out this event: ${eventTitle}`,
                     url: eventUrl,
                 });
             } catch (error) {
-                console.error('Error sharing event:', error);
+                if (error.name !== 'AbortError') {
+                    await fallbackCopy(eventUrl);
+                }
             }
         } else {
-            navigator.clipboard.writeText(eventUrl)
-                .then(() => toast.success('Event link copied to clipboard!'))
-                .catch(err => console.error('Could not copy text: ', err));
+            await fallbackCopy(eventUrl);
+        }
+    };
+
+    const handleWriteReview = async (event) => {
+        if (!user) {
+            toast.error("Please login to write a review");
+            return;
+        }
+
+        const userReview = userReviews[event._id];
+        
+        if (userReview) {
+            setSelectedEventForReview(event);
+            setShowReviewModal(true);
+            return;
+        }
+
+        try {
+            const canReviewResponse = await API.get(`/api/reviews/event/${event._id}/can-review`);
+            
+            if (!canReviewResponse.data.canReview) {
+                const existingReviewResponse = await API.get(`/api/reviews/event/${event._id}/my-review`);
+                
+                if (existingReviewResponse.data.review) {
+                    setUserReviews(prev => ({
+                        ...prev,
+                        [event._id]: existingReviewResponse.data.review
+                    }));
+                    setSelectedEventForReview(event);
+                    setShowReviewModal(true);
+                } else {
+                    toast.error("You can only review events you have attended with approved registration");
+                }
+                return;
+            }
+
+            setSelectedEventForReview(event);
+            setShowReviewModal(true);
+        } catch (error) {
+            console.error("Error checking review eligibility:", error);
+            toast.error("Error checking review eligibility");
+        }
+    };
+
+    const handleViewReviews = (event) => {
+        setSelectedEventReviews(event);
+        setShowReviewsModal(true);
+    };
+
+    const handleReviewSuccess = (review) => {
+        setShowReviewModal(false);
+        setUserReviews(prev => ({
+            ...prev,
+            [review.event]: review
+        }));
+        fetchEvents();
+        toast.success(review._id ? "Review updated successfully!" : "Review submitted successfully!");
+    };
+
+    const handleReviewDelete = async (eventId) => {
+        try {
+            setUserReviews(prev => {
+                const newReviews = { ...prev };
+                delete newReviews[eventId];
+                return newReviews;
+            });
+            
+            fetchEvents();
+            toast.success("Review deleted successfully!");
+        } catch (error) {
+            console.error("Error in review deletion:", error);
+            toast.error("Review deleted successfully!");
         }
     };
 
     const handleResetFilters = () => {
         setSearchQuery('');
         setCategoryFilter('all');
-        setStatusFilter('all');
         setDateRange({ start: '', end: '' });
     };
 
@@ -228,18 +330,40 @@ const DiscoverEvents = ({ onToggleFavorite, favoritedEvents }) => {
         return `${formatTime(startTime)} - ${formatTime(endTime)}`;
     };
 
-    const refreshData = () => {
-        fetchEvents();
-        if (user) {
-            fetchUserRegistrations();
+    const refreshData = async () => {
+        setLoading(true);
+        try {
+            await fetchEvents();
+            if (user) {
+                await fetchUserRegistrations();
+                await fetchUserReviews();
+            }
+            toast.info("Events and reviews refreshed!");
+        } catch (error) {
+            console.error("Error refreshing data:", error);
+            toast.error("Error refreshing data");
+        } finally {
+            setLoading(false);
         }
-        toast.info("Refreshing events...");
     };
 
     if (loading) {
         return (
             <div className="discover-events">
                 <div className="loading">Loading events...</div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="discover-events">
+                <div className="error-state">
+                    <div className="error-icon">⚠️</div>
+                    <h3>Unable to load events</h3>
+                    <p>{error}</p>
+                    <button onClick={fetchEvents} className="btn-primary">Try Again</button>
+                </div>
             </div>
         );
     }
@@ -254,7 +378,40 @@ const DiscoverEvents = ({ onToggleFavorite, favoritedEvents }) => {
                 />
             )}
             
-            {/* Cancel Confirmation Modal */}
+            {showReviewModal && selectedEventForReview && (
+                <ReviewModal
+                    event={selectedEventForReview}
+                    existingReview={userReviews[selectedEventForReview._id]}
+                    onClose={() => setShowReviewModal(false)}
+                    onSuccess={handleReviewSuccess}
+                    onDelete={() => handleReviewDelete(selectedEventForReview._id)}
+                />
+            )}
+
+            {showReviewsModal && selectedEventReviews && (
+                <div className="modal-overlay" onClick={() => setShowReviewsModal(false)}>
+                    <div className="reviews-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2>Reviews for {selectedEventReviews.title}</h2>
+                            <button 
+                                className="close-button"
+                                onClick={() => setShowReviewsModal(false)}
+                                aria-label="Close reviews modal"
+                            >
+                                ✕
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            <EventReviews 
+                                eventId={selectedEventReviews._id}
+                                event={selectedEventReviews}
+                                currentUser={user}
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
+            
             {showCancelConfirm.registrationId && (
                 <div className="cancel-confirm-overlay">
                     <div className="cancel-confirm-dialog">
@@ -264,13 +421,13 @@ const DiscoverEvents = ({ onToggleFavorite, favoritedEvents }) => {
                                 onClick={() => {
                                     handleCancelRegistration(showCancelConfirm.registrationId, showCancelConfirm.eventId);
                                 }}
-                                className="btn btn-primary"
+                                className="btn-primary"
                             >
                                 Yes
                             </button>
                             <button
                                 onClick={() => setShowCancelConfirm({ registrationId: null, eventId: null })}
-                                className="btn btn-secondary"
+                                className="btn-secondary"
                             >
                                 No
                             </button>
@@ -279,7 +436,6 @@ const DiscoverEvents = ({ onToggleFavorite, favoritedEvents }) => {
                 </div>
             )}
             
-            {/* Summary Cards */}
             <div className="summary-cards">
                 <div className="summary-card">
                     <div className="summary-icon">📅</div>
@@ -304,7 +460,6 @@ const DiscoverEvents = ({ onToggleFavorite, favoritedEvents }) => {
                 </div>
             </div>
             
-            {/* Filters Section */}
             <div className="filters-section">
                 <div className="search-container">
                     <input 
@@ -330,15 +485,21 @@ const DiscoverEvents = ({ onToggleFavorite, favoritedEvents }) => {
                             ))}
                         </select>
                         
-                        <select 
-                            value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value)}
+                        <input
+                            type="date"
+                            value={dateRange.start}
+                            onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
                             className="filter-select"
-                        >
-                            <option value="all">All Status</option>
-                            <option value="published">Published</option>
-                            <option value="draft">Draft</option>
-                        </select>
+                            placeholder="Start Date"
+                        />
+                        
+                        <input
+                            type="date"
+                            value={dateRange.end}
+                            onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
+                            className="filter-select"
+                            placeholder="End Date"
+                        />
                     </div>
                     
                     <div className="action-buttons">
@@ -352,12 +513,10 @@ const DiscoverEvents = ({ onToggleFavorite, favoritedEvents }) => {
                 </div>
             </div>
             
-            {/* Results Info */}
             <div className="results-info">
                 <p>Showing {filteredEvents.length} of {events.length} events</p>
             </div>
             
-            {/* Events Grid */}
             <div className="events-grid">
                 {filteredEvents.length === 0 ? (
                     <div className="no-events">
@@ -374,11 +533,13 @@ const DiscoverEvents = ({ onToggleFavorite, favoritedEvents }) => {
                     filteredEvents.map(event => {
                         const userRegistration = getRegistrationStatus(event._id);
                         const isRegistered = !!userRegistration;
-                        const isEventFull = event.capacity <= (event.registeredCount || 0);
+                        const isApproved = userRegistration?.status === 'approved';
+                        const isEventFull = event.capacity && (event.registeredCount || 0) >= event.capacity;
+                        const userReview = userReviews[event._id];
+                        const hasReviews = event.reviewCount > 0;
                         
                         return (
                             <div key={event._id} className="event-card">
-                                {/* Event Image */}
                                 <div className="event-image-container">
                                     {event.image ? (
                                         <img 
@@ -394,9 +555,17 @@ const DiscoverEvents = ({ onToggleFavorite, favoritedEvents }) => {
                                     <div className="event-category-tag">
                                         {event.category || 'General'}
                                     </div>
+                                    {hasReviews && (
+                                        <div 
+                                            className="reviews-badge clickable"
+                                            onClick={() => handleViewReviews(event)}
+                                            title="Click to view reviews"
+                                        >
+                                            ⭐ {event.averageRating?.toFixed(1) || 0} ({event.reviewCount})
+                                        </div>
+                                    )}
                                 </div>
                                 
-                                {/* Event Details */}
                                 <div className="event-content">
                                     <div className="event-header">
                                         <h3 className="event-title">{event.title || 'Untitled Event'}</h3>
@@ -404,6 +573,7 @@ const DiscoverEvents = ({ onToggleFavorite, favoritedEvents }) => {
                                             <button 
                                                 className={`favorite-btn ${event.isFavorite ? 'active' : ''}`}
                                                 onClick={() => handleToggleFavorite(event._id)}
+                                                aria-label={event.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
                                                 title={event.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
                                             >
                                                 {event.isFavorite ? '❤️' : '🤍'}
@@ -411,6 +581,7 @@ const DiscoverEvents = ({ onToggleFavorite, favoritedEvents }) => {
                                             <button 
                                                 className="share-btn"
                                                 onClick={() => handleShare(event.title, event._id)}
+                                                aria-label="Share event"
                                                 title="Share event"
                                             >
                                                 🔗
@@ -458,48 +629,81 @@ const DiscoverEvents = ({ onToggleFavorite, favoritedEvents }) => {
                                         </div>
                                     </div>
                                     
-                                    {/* Registration Status */}
-                                    <div className="registration-section">
-                                        {isRegistered ? (
-                                            <div className="registration-status">
-                                                {userRegistration.status === 'approved' && (
-                                                    <div className="status-item status-approved">
-                                                        <span className="status-icon">✅</span>
-                                                        <span className="status-text">Registered</span>
-                                                    </div>
-                                                )}
-                                                {userRegistration.status === 'pending' && (
-                                                    <div className="status-item status-pending">
-                                                        <span className="status-icon">🕒</span>
-                                                        <span className="status-text">Pending</span>
-                                                        <button 
-                                                            className="btn-cancel"
-                                                            onClick={() => setShowCancelConfirm({ 
-                                                                registrationId: userRegistration._id, 
-                                                                eventId: event._id 
-                                                            })}
-                                                        >
-                                                            Cancel
-                                                        </button>
-                                                    </div>
-                                                )}
-                                                {userRegistration.status === 'rejected' && (
-                                                    <div className="status-item status-rejected">
-                                                        <span className="status-icon">❌</span>
-                                                        <span className="status-text">Rejected</span>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ) : (
-                                            <button 
-                                                className={`btn-register ${isEventFull ? 'disabled' : ''}`}
-                                                onClick={() => handleRegister(event)}
-                                                disabled={isEventFull || !user}
-                                            >
-                                                {!user ? 'Login to Register' : 
-                                                 isEventFull ? 'Event Full' : 'Register Now'}
-                                            </button>
-                                        )}
+                                    <div className="fixed-buttons-container">
+                                        <div className="top-button-section">
+                                            {isRegistered ? (
+                                                <button 
+                                                    className={`btn-review ${userReview ? 'has-review' : ''}`}
+                                                    onClick={() => handleWriteReview(event)}
+                                                    disabled={!isApproved}
+                                                    aria-label={userReview ? 'Edit your review' : 'Write a review'}
+                                                >
+                                                    {!isApproved ? 'Pending Review' : 
+                                                     userReview ? '✏️ Edit Review' : '⭐ Write Review'}
+                                                </button>
+                                            ) : (
+                                                <button 
+                                                    className={`view-reviews-btn ${!hasReviews ? 'disabled' : ''}`}
+                                                    onClick={() => handleViewReviews(event)}
+                                                    disabled={!hasReviews}
+                                                    aria-label={hasReviews ? 'View event reviews' : 'No reviews available'}
+                                                >
+                                                    {hasReviews ? ' View Reviews' : 'No Reviews'}
+                                                </button>
+                                            )}
+                                        </div>
+                                        
+                                        <div className="bottom-button-section">
+                                            {isRegistered ? (
+                                                <div className="registration-status-btn">
+                                                    {userRegistration.status === 'approved' && (
+                                                        <div className="status-approved-btn">
+                                                            <span className="status-text">✅ Registered</span>
+                                                            <button 
+                                                                className="btn-cancel"
+                                                                onClick={() => setShowCancelConfirm({ 
+                                                                    registrationId: userRegistration._id, 
+                                                                    eventId: event._id 
+                                                                })}
+                                                                aria-label="Cancel registration"
+                                                            >
+                                                                Cancel
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                    {userRegistration.status === 'pending' && (
+                                                        <div className="status-pending-btn">
+                                                            <span className="status-text">🕒 Pending</span>
+                                                            <button 
+                                                                className="btn-cancel"
+                                                                onClick={() => setShowCancelConfirm({ 
+                                                                    registrationId: userRegistration._id, 
+                                                                    eventId: event._id 
+                                                                })}
+                                                                aria-label="Cancel registration"
+                                                            >
+                                                                Cancel
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                    {userRegistration.status === 'rejected' && (
+                                                        <div className="status-rejected-btn">
+                                                            <span className="status-text">❌ Rejected</span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <button 
+                                                    className={`btn-register ${isEventFull ? 'disabled' : ''}`}
+                                                    onClick={() => handleRegister(event)}
+                                                    disabled={isEventFull || !user}
+                                                    aria-label={!user ? 'Login to register' : isEventFull ? 'Event is full' : 'Register for event'}
+                                                >
+                                                    {!user ? 'Login to Register' : 
+                                                     isEventFull ? 'Event Full' : 'Register Now'}
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -512,5 +716,3 @@ const DiscoverEvents = ({ onToggleFavorite, favoritedEvents }) => {
 };
 
 export default DiscoverEvents;
-
-

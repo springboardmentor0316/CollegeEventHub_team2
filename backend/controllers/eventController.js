@@ -1,6 +1,8 @@
 
 import Event from "../models/eventModel.js";
 import User from "../models/userModel.js";
+import Registration from "../models/registrationModel.js";
+import Review from "../models/reviewModel.js";
 
 export const createEvent = async (req, res) => {
   try {
@@ -9,9 +11,9 @@ export const createEvent = async (req, res) => {
     const event = new Event({ 
       ...req.body, 
       createdBy: req.user.id,
-      creatorName: user.name, // Store creator name
+      creatorName: user.name,
       draft: req.body.draft || false,
-      published: !req.body.draft // If it's not a draft, it's published
+      published: !req.body.draft
     });
     
     await event.save();
@@ -24,7 +26,6 @@ export const createEvent = async (req, res) => {
 export const getMyEvents = async (req, res) => {
   try {
     console.log("Incoming GET my_events"); 
-    // Use req.user.id instead of req.body.userId
     const events = await Event.find({ createdBy: req.user.id }).sort({ createdAt: -1 });
     console.log("Found events:", events.length);
     res.json({ success: true, events });
@@ -34,7 +35,6 @@ export const getMyEvents = async (req, res) => {
   }
 };
 
-// Add this controller function
 export const deleteEvent = async (req, res) => {
   try {
     const event = await Event.findById(req.params.eventId);
@@ -43,7 +43,6 @@ export const deleteEvent = async (req, res) => {
       return res.status(404).json({ success: false, message: "Event not found" });
     }
     
-    // Check if the user owns this event
     if (event.createdBy.toString() !== req.user.id) {
       return res.status(403).json({ success: false, message: "Not authorized to delete this event" });
     }
@@ -54,9 +53,6 @@ export const deleteEvent = async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 };
-
-
-
 
 export const updateEvent = async (req, res) => {
   try {
@@ -70,7 +66,6 @@ export const updateEvent = async (req, res) => {
       return res.status(403).json({ success: false, message: "Not authorized to update this event" });
     }
     
-    // Handle draft/published status correctly
     const updateData = { ...req.body };
     
     if (updateData.draft !== undefined) {
@@ -91,13 +86,78 @@ export const updateEvent = async (req, res) => {
 
 export const getAllEvents = async (req, res) => {
   try {
-    // Get all events, populate creator info
-    const events = await Event.find()
+    // Only fetch published events (not drafts)
+    const events = await Event.find({ published: true })
       .sort({ createdAt: -1 })
-      .populate('createdBy', 'name email');
+      .populate('createdBy', 'name email')
+      .lean();
+
+    // Get registration counts for all events
+    const eventIds = events.map(event => event._id);
     
-    res.json({ success: true, events });
+    const registrationCounts = await Registration.aggregate([
+      {
+        $match: {
+          event: { $in: eventIds },
+          status: { $in: ['pending', 'approved'] }
+        }
+      },
+      {
+        $group: {
+          _id: '$event',
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    // Get review statistics for all events
+    const reviewStats = await Review.aggregate([
+      {
+        $match: {
+          event: { $in: eventIds },
+          isVisible: true
+        }
+      },
+      {
+        $group: {
+          _id: '$event',
+          reviewCount: { $sum: 1 },
+          averageRating: { $avg: '$rating' }
+        }
+      }
+    ]);
+
+    // Create maps for easy lookup
+    const registrationCountMap = {};
+    registrationCounts.forEach(item => {
+      registrationCountMap[item._id.toString()] = item.count;
+    });
+
+    const reviewStatsMap = {};
+    reviewStats.forEach(item => {
+      reviewStatsMap[item._id.toString()] = {
+        reviewCount: item.reviewCount,
+        averageRating: Math.round(item.averageRating * 10) / 10 || 0
+      };
+    });
+
+    // Add registration counts and review stats to events
+    const eventsWithStats = events.map(event => {
+      const eventId = event._id.toString();
+      const reviewStat = reviewStatsMap[eventId] || { reviewCount: 0, averageRating: 0 };
+      
+      return {
+        ...event,
+        registeredCount: registrationCountMap[eventId] || 0,
+        reviewCount: reviewStat.reviewCount,
+        averageRating: reviewStat.averageRating
+      };
+    });
+
+    res.json({ success: true, events: eventsWithStats });
+
   } catch (err) {
+    console.error("Error getting events:", err);
     res.status(500).json({ success: false, message: err.message });
   }
 };

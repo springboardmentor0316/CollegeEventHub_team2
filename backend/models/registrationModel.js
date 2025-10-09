@@ -27,7 +27,11 @@ const registrationSchema = new mongoose.Schema({
   phoneNumber: { type: String },
   collegeId: { type: String },
   department: { type: String },
-  year: { type: String }
+  year: { type: String },
+  hasGivenReview: {
+    type: Boolean,
+    default: false
+  }
 }, { timestamps: true });
 
 // Prevent duplicate registrations

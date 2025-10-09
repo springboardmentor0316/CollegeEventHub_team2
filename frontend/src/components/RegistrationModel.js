@@ -200,3 +200,4 @@ const RegistrationModal = ({ event, onClose, onSuccess }) => {
 };
 
 export default RegistrationModal;
+

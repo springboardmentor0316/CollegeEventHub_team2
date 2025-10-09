@@ -13,6 +13,7 @@ import authRouter from './routes/authRoutes.js';
 import eventRouter from './routes/eventRouter.js';
 import registrationRouter from './routes/registrationRouter.js';
 import adminRouter from './routes/adminRouter.js';
+import reviewRouter from './routes/reviewRoutes.js';
 
 
 const app=express();
@@ -38,6 +39,7 @@ app.use('/api/auth',authRouter);
 app.use('/api/events', eventRouter);
 app.use('/api/registrations', registrationRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/reviews', reviewRouter);
 
 
 app.listen(port,()=>console.log(`Server started on ${port}`));

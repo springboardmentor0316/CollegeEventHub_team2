@@ -166,7 +166,7 @@ const AnalyticsTab = () => {
             <div className="analytics-header">
                 <div className="header-content">
                     <h1>Analytics Dashboard</h1>
-                    <p>Overview of your event performance and statistics</p>
+                    {/* <p>Overview of your event performance and statistics</p> */}
                 </div>
                 <button onClick={refreshData} className="btn-refresh">
                     🔄 Refresh Data
@@ -338,3 +338,8 @@ const AnalyticsTab = () => {
 };
 
 export default AnalyticsTab;
+
+
+
+
+

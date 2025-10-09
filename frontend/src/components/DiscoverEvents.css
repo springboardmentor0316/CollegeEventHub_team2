@@ -1,7 +1,7 @@
-/* Discover Events - Complete Previous Styling */
+/* Discover Events - Complete Styling */
 .discover-events {
     padding: 24px;
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    background: linear-gradient(135deg, #f7f7f8 0%, #e2e8f0 100%);
     min-height: 100vh;
 }
 
@@ -207,6 +207,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
     gap: 28px;
+    align-items: stretch;
 }
 
 /* Event Card */
@@ -218,6 +219,10 @@
     border: 1px solid #e2e8f0;
     transition: all 0.4s ease;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 680px;
 }
 
 .event-card:hover {
@@ -271,6 +276,10 @@
 /* Event Content */
 .event-content {
     padding: 24px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 16px;
 }
 
 .event-header {
@@ -334,7 +343,7 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-    margin-bottom: 24px;
+    margin-bottom: 0;
 }
 
 .detail-item {
@@ -355,76 +364,115 @@
     font-weight: 500;
 }
 
-/* Registration Section */
-.registration-section {
-    border-top: 1px solid #f1f5f9;
-    padding-top: 20px;
-}
-
-.registration-status {
+/* Fixed Buttons Container - ALWAYS 2 BUTTONS */
+.fixed-buttons-container {
+    margin-top: auto;
     display: flex;
     flex-direction: column;
     gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid #f1f5f9;
 }
 
-.status-badge {
-    padding: 12px 16px;
-    border-radius: 12px;
-    font-weight: 700;
-    text-align: center;
-    font-size: 14px;
-    letter-spacing: 0.5px;
-}
-
-.status-approved {
-    background: linear-gradient(135deg, #10b981, #059669);
-    color: white;
-}
-
-.status-pending {
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-    color: white;
-}
-
-.status-rejected {
-    background: linear-gradient(135deg, #ef4444, #dc2626);
-    color: white;
-}
-
-.btn-cancel {
-    background: #f8fafc;
-    color: #64748b;
-    border: 2px solid #e2e8f0;
-    padding: 12px 20px;
-    border-radius: 10px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
+/* Top Button Section */
+.top-button-section {
     width: 100%;
 }
 
-.btn-cancel:hover {
-    background: #fee2e2;
-    color: #dc2626;
-    border-color: #fecaca;
+/* Write Review Button */
+.btn-review {
+    width: 100%;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-review:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+}
+
+.btn-review.has-review {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+.btn-review.has-review:hover:not(:disabled) {
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.btn-review:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* View Reviews Button */
+.view-reviews-btn {
+    width: 100%;
+    padding: 12px 16px;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    color: #374151;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.view-reviews-btn:hover:not(:disabled) {
+    background: #e2e8f0;
+    border-color: #cbd5e1;
     transform: translateY(-1px);
 }
 
-/* Register Button */
+.view-reviews-btn.disabled {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    color: #94a3b8;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Bottom Button Section */
+.bottom-button-section {
+    width: 100%;
+}
+
+/* Register Now Button */
 .btn-register {
-    /* width:100%; */
+    width: 100%;
+    padding: 14px 16px;
     background: linear-gradient(135deg, #10b981, #059669);
     color: white;
     border: none;
-    padding: 16px 24px;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: 700;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.4s ease;
-    width: 100;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    text-transform: none;
+    letter-spacing: normal;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: relative;
     overflow: hidden;
 }
@@ -445,8 +493,8 @@
 }
 
 .btn-register:hover:not(.disabled) {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
 }
 
 .btn-register.disabled {
@@ -458,6 +506,87 @@
 .btn-register.disabled:hover {
     transform: none;
     box-shadow: none;
+}
+
+/* Registration Status Buttons */
+.registration-status-btn {
+    width: 100%;
+}
+
+.status-approved-btn,
+.status-pending-btn,
+.status-rejected-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    width: 100%;
+    min-height: 48px;
+    box-sizing: border-box;
+}
+
+.status-approved-btn {
+    background: #dcfce7;
+    color: #166534;
+    border: 2px solid #bbf7d0;
+}
+
+.status-pending-btn {
+    background: #fef9c3;
+    color: #854d0e;
+    border: 2px solid #fef08a;
+}
+
+.status-rejected-btn {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 2px solid #fecaca;
+}
+
+.status-text {
+    font-size: 14px;
+    flex: 1;
+    text-align: left;
+}
+
+/* Cancel Button in Status */
+.btn-cancel {
+    background: #f8fafc;
+    color: #64748b;
+    border: 2px solid #e2e8f0;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 12px;
+    margin-left: 8px;
+    flex-shrink: 0;
+    min-height: auto;
+}
+
+.btn-cancel:hover {
+    background: #fee2e2;
+    color: #dc2626;
+    border-color: #fecaca;
+}
+
+/* Reviews Badge */
+.reviews-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #374151;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* No Events State */
@@ -489,157 +618,91 @@
     font-size: 1rem;
 }
 
-/* Responsive Design */
-@media (max-width: 1024px) {
-    .events-grid {
-        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-        gap: 24px;
-    }
-}
-
-@media (max-width: 768px) {
-    .discover-events {
-        padding: 16px;
-    }
-    
-    .summary-cards {
-        grid-template-columns: 1fr;
-        gap: 16px;
-    }
-    
-    .filters-section {
-        padding: 20px;
-    }
-    
-    .filter-controls {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .filter-group {
-        flex-direction: column;
-    }
-    
-    .filter-select {
-        min-width: auto;
-    }
-    
-    .action-buttons {
-        justify-content: stretch;
-    }
-    
-    .btn-primary, .btn-secondary {
-        flex: 1;
-        justify-content: center;
-    }
-    
-    .events-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-    
-    .event-card {
-        margin-bottom: 0;
-    }
-    
-    .event-content {
-        padding: 20px;
-    }
-}
-
-@media (max-width: 480px) {
-    .event-header {
-        flex-direction: column;
-        gap: 12px;
-    }
-    
-    .event-actions {
-        align-self: flex-end;
-    }
-    
-    .event-title {
-        margin-right: 0;
-    }
-    
-    .no-events {
-        padding: 60px 20px;
-    }
-    
-    .no-events-icon {
-        font-size: 3rem;
-    }
-}
-
-
-/* Add this to your existing DiscoverEvents CSS */
-.events-grid:not(.compact) {
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: 24px;
-}
-
-.event-card:not(.compact) .event-image-container {
-    height: 180px;
-}
-
-.event-card:not(.compact) .event-image-placeholder {
-    height: 180px;
-    font-size: 3rem;
-}
-
-.event-card:not(.compact) .event-content {
-    padding: 22px;
-}
-
-.event-card:not(.compact) .event-title {
-    font-size: 1.3rem;
-}
-
-.event-card:not(.compact) .event-description {
-    font-size: 0.95rem;
-}
-
-
-
-
-.status-item {
+/* Reviews Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
     display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 8px;
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    width: fit-content;
-  }
-  
-  .status-icon {
-    font-size: 1.1rem;
-    width: 20px;
+    z-index: 1000;
+}
+
+.reviews-modal {
+    background: white;
+    border-radius: 16px;
+    padding: 0;
+    max-width: 600px;
+    width: 95%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.reviews-modal .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
+    border-bottom: 1px solid #e2e8f0;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
+    border-radius: 16px 16px 0 0;
+}
+
+.reviews-modal .modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.reviews-modal .close-button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #64748b;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.reviews-modal .close-button:hover {
+    background: #f1f5f9;
+    color: #374151;
+}
+
+.reviews-modal .modal-body {
+    padding: 24px;
+}
+
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.reviews-placeholder {
+    padding: 40px;
     text-align: center;
-  }
-  
-  .status-text {
-    font-size: 14px;
-  }
-  
-  .status-approved {
-    background: #dcfce7; /* light green */
-    color: #166534;     /* dark green */
-  }
-  
-  .status-pending {
-    background: #fef9c3; /* light yellow */
-    color: #854d0e;     /* dark yellow-brown */
-  }
-  
-  .status-rejected {
-    background: #fee2e2; /* light red */
-    color: #991b1b;     /* dark red */
-  }
-  
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 2px dashed #e2e8f0;
+}
 
+.reviews-placeholder p {
+    color: #64748b;
+    margin: 0;
+}
 
-  /* Cancel Confirmation Dialog */
+/* Cancel Confirmation Dialog */
 .cancel-confirm-overlay {
     position: fixed;
     top: 0;
@@ -704,73 +767,229 @@
     background: #d1d5db;
 }
 
-/* Cancel button in registration status */
-.btn-cancel {
-    background: #f8fafc;
-    color: #64748b;
-    border: 2px solid #e2e8f0;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 14px;
-    margin-left: auto;
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .events-grid {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 24px;
+    }
 }
 
-.btn-cancel:hover {
-    background: #fee2e2;
-    color: #dc2626;
-    border-color: #fecaca;
+@media (max-width: 768px) {
+    .discover-events {
+        padding: 16px;
+    }
+    
+    .summary-cards {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .filters-section {
+        padding: 20px;
+    }
+    
+    .filter-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-group {
+        flex-direction: column;
+    }
+    
+    .filter-select {
+        min-width: auto;
+    }
+    
+    .action-buttons {
+        justify-content: stretch;
+    }
+    
+    .btn-primary, .btn-secondary {
+        flex: 1;
+        justify-content: center;
+    }
+    
+    .events-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .event-card {
+        margin-bottom: 0;
+    }
+    
+    .event-content {
+        padding: 20px;
+        gap: 12px;
+    }
 }
 
-/* Fix for status items */
-.status-item {
+@media (max-width: 480px) {
+    .event-header {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .event-actions {
+        align-self: flex-end;
+    }
+    
+    .event-title {
+        margin-right: 0;
+    }
+    
+    .no-events {
+        padding: 60px 20px;
+    }
+    
+    .no-events-icon {
+        font-size: 3rem;
+    }
+    
+    .status-approved-btn,
+    .status-pending-btn,
+    .status-rejected-btn {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+    }
+    
+    .btn-cancel {
+        margin-left: 0;
+        width: 100%;
+    }
+}
+
+
+
+
+
+
+
+
+/* Reviews Modal Styles */
+.reviews-modal {
+    background: white;
+    border-radius: 12px;
+    padding: 0;
+    max-width: 800px;
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.reviews-modal .modal-header {
     display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    width: 100%;
     justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e9ecef;
+    background: #f8f9fa;
+    border-radius: 12px 12px 0 0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
-.status-icon {
-    font-size: 1.1rem;
-    width: 20px;
-    text-align: center;
+.reviews-modal .modal-body {
+    padding: 0;
 }
 
-.status-text {
+/* Clickable reviews badge */
+.reviews-badge.clickable {
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.reviews-badge.clickable:hover {
+    transform: scale(1.05);
+    background-color: #ffd700;
+}
+
+/* Button styles */
+.btn-review {
+    background: #ffc107;
+    color: #000;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
     font-size: 14px;
-    flex: 1;
+    font-weight: 500;
+    transition: background 0.3s ease;
+    width: 100%;
 }
 
-.status-approved {
-    background: #dcfce7;
-    color: #166534;
+.btn-review:hover:not(:disabled) {
+    background: #e0a800;
 }
 
-.status-pending {
-    background: #fef9c3;
-    color: #854d0e;
+.btn-review:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    color: white;
 }
 
-.status-rejected {
-    background: #fee2e2;
-    color: #991b1b;
+.btn-review.has-review {
+    background: #17a2b8;
+    color: white;
 }
 
-/* Fix registration section layout */
-.registration-section {
-    border-top: 1px solid #f1f5f9;
-    padding-top: 20px;
+.btn-review.has-review:hover:not(:disabled) {
+    background: #138496;
 }
 
-.registration-status {
+.view-reviews-btn {
+    background: #6f42c1;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.3s ease;
+    width: 100%;
+}
+
+.view-reviews-btn:hover:not(:disabled) {
+    background: #5a2d91;
+}
+
+.view-reviews-btn.disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+}
+
+/* Cancel confirmation overlay */
+.cancel-confirm-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
-    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.cancel-confirm-dialog {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+}
+
+.cancel-confirm-buttons {
+    display: flex;
     gap: 12px;
+    justify-content: center;
+    margin-top: 20px;
 }
